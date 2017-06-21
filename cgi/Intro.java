@@ -2,7 +2,6 @@ package cgi;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,6 +21,7 @@ import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -113,7 +113,7 @@ public void read_write(String result) throws IOException{
 		continue;
 		}
 	if(row!=null){
-		rowwrite[i]=sheet_write.createRow((short)i);
+		rowwrite[i]=sheet_write.createRow((short)i);;
 		//rowwrite[i].createCell(0).setCellValue("Hey");
 		 fCell = row.getFirstCellNum(); System.out.print(fCell + " ");
          lCell = row.getLastCellNum();	System.out.println(lCell);
@@ -123,17 +123,46 @@ public void read_write(String result) throws IOException{
 				 continue;
 			 }//if the cell has value determine the type of value.
 			 else{
-				//getting refernce of current cell
+				//getting reference of current cell
 				 Cell currentCell = cell;
-				 
+				 sheet_write.autoSizeColumn(iCell);
 				 //testing for types of the cell
+				 
+				 DataFormatter dataFormatter = new DataFormatter();
+				 String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
+				 rowwrite[i].createCell(iCell).setCellValue(cellStringValue);
+				 
+				 if(i>=6 && iCell ==5 || i>=6 && iCell ==6){
+					 continue;}
+				
+				 
 				 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
                      System.out.print(currentCell.getNumericCellValue() + "--");
+                     
+    				 if(i>=6&& iCell ==9){
+    					 double value = currentCell.getNumericCellValue();
+    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+value+",10)");
+    					 continue;
+    				 }
                      rowwrite[i].createCell(iCell).setCellValue(currentCell.getNumericCellValue());    
 				 }
 				 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
                      System.out.print(currentCell.getStringCellValue() + "--");
+    				 if(i>=6&& iCell ==9){
+    					 String value = currentCell.getStringCellValue();
+    					 String newValue = value.replaceAll("-","");
+    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+newValue+",10)");
+    					 continue;
+    				 }
                      rowwrite[i].createCell(iCell).setCellValue(currentCell.getStringCellValue());    
+				 }
+				 else if (currentCell.getCellTypeEnum() == CellType.FORMULA) {
+                     System.out.print(currentCell.getStringCellValue() + "--");
+                     rowwrite[i].createCell(iCell).setCellValue(currentCell.getCellFormula());    
+				 }
+				 else if (currentCell.getCellTypeEnum() == CellType.ERROR) {
+                     System.out.print(currentCell.getStringCellValue() + "--");
+                     rowwrite[i].createCell(iCell).setCellValue(currentCell.getErrorCellValue());    
 				 }
 				 
 			 s1=""+cell;
