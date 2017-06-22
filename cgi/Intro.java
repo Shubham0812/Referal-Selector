@@ -116,7 +116,8 @@ public void read_write(String result) throws IOException{
 	       font.setFontName(HSSFFont.FONT_ARIAL);
 	       font.setBold(true);
 	       style.setFont(font);
-	    
+	       int counter1 = 7;
+	       int counter2 = 7;
 	 //code to iterate over the rows  
 	for(int i=rowStart;i<=rowEnd;i++){
 	row=sheet.getRow(i);
@@ -125,7 +126,7 @@ public void read_write(String result) throws IOException{
 		continue;
 		}
 	if(row!=null){
-		rowwrite[i]=sheet_write.createRow((short)i);;
+		rowwrite[i]=sheet_write.createRow((short)i);
 
 		//first and last cell for the row
 		 fCell = row.getFirstCellNum(); 
@@ -133,33 +134,33 @@ public void read_write(String result) throws IOException{
          for (int iCell = fCell; iCell < lCell; iCell++) {
 			 cell = row.getCell(iCell);
 			 if(cell==null){
-				 if(iCell==9){
+				if(iCell==9){
 					 Cell currentCells = row.getCell(iCell+3);
 					 
 					  if(currentCells==null){
 					  Cell currentCeller = row.getCell(iCell+4);
 		    		  if(currentCeller.getCellTypeEnum() == CellType.NUMERIC){
 		    		  double value = currentCeller.getNumericCellValue();
-		    		  rowwrite[i].createCell(9).setCellFormula("RIGHT("+value+",10)");
+		    		  rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
 		    		  continue;
 							 }
 		    		  else if(currentCeller.getCellTypeEnum() == CellType.STRING){
 	    					 String value = currentCeller.getStringCellValue();
 	    					 String newValue = value.replaceAll("-","");
-	    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+newValue+",10)");
+	    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
 	    					 continue;
 	    				 }
 		    		  continue;
 					 	}
     				 if(currentCells.getCellTypeEnum() == CellType.NUMERIC){
     					 double value = currentCells.getNumericCellValue();
-    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+value+",10)");
+    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
     					 continue;
 					 }
     				 else if(currentCells.getCellTypeEnum() == CellType.STRING){
     					 String value = currentCells.getStringCellValue();
     					 String newValue = value.replaceAll("-","");
-    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+newValue+",10)");
+    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
     				 }
 				 continue;
 				 		}
@@ -169,51 +170,72 @@ public void read_write(String result) throws IOException{
 				//getting reference of current cell
 				 Cell currentCell = cell;
 				 sheet_write.autoSizeColumn(iCell);
-				 //testing for types of the cell
-				 
+				// testing for types of the cell
 				 DataFormatter dataFormatter = new DataFormatter();
 				 String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
-				 rowwrite[i].createCell(iCell).setCellValue(cellStringValue);
+				 rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);
 				 
+				 if(i>=6 && iCell==5 ||i>=6 && iCell==6){
+	    			 CellStyle dateStyle = wbwrite.createCellStyle();
+	    		       dateStyle.setDataFormat(
+	    		           createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
+	    		       Cell writeDate = rowwrite[i].createCell(iCell+1);
+	   	            writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
+	   	            writeDate.setCellStyle(dateStyle); 
+	   	         sheet_write.setColumnWidth(iCell,1100*4);
+	        continue;
+				 }
 				 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
                      System.out.print(currentCell.getNumericCellValue() + "--");
                      
     				 if(i>=6&& iCell ==9){
     					 double value = currentCell.getNumericCellValue();
-    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+value+",10)");
+    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
     					 continue;
     				 }
-                     rowwrite[i].createCell(iCell).setCellValue(currentCell.getNumericCellValue());    
+                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());    
 				 }
 				 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
                      System.out.print(currentCell.getStringCellValue() + "--");
     				 if(i>=6&& iCell ==9){
     					 String value = currentCell.getStringCellValue();
     					 String newValue = value.replaceAll("-","");
-    					 rowwrite[i].createCell(9).setCellFormula("RIGHT("+newValue+",10)");
+    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
     					 continue;
     				 }
-                     rowwrite[i].createCell(iCell).setCellValue(currentCell.getStringCellValue());    
+                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getStringCellValue());    
 				 }
 				 else if (currentCell.getCellTypeEnum() == CellType.FORMULA) {
                      System.out.print(currentCell.getStringCellValue() + "--");
-                     rowwrite[i].createCell(iCell).setCellValue(currentCell.getCellFormula());    
+                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getCellFormula());    
 				 }
 				 else if (currentCell.getCellTypeEnum() == CellType.ERROR) {
                     System.out.print(currentCell.getStringCellValue() + "--");
-                     rowwrite[i].createCell(iCell).setCellValue(currentCell.getErrorCellValue());    
+                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());    
 				 	}
 				 
 			 s1=""+cell;
 			 s2 += s1 + "\t";
 			 	}
-	}
+	}//for ends
+         
          s2+= "\n";
+         
+         	if(i>=6){
+        	 rowwrite[i]=sheet_write.getRow((short)i);;
+
+ 		 rowwrite[i].createCell(0).setCellFormula("CONCATENATE(F"+counter1+",D"+counter2+")");
+ 		 counter1+=1;counter2+=1;
+         }
+         	if(i==5){
+         		rowwrite[i]=sheet_write.getRow((short)i);;
+         		 rowwrite[i].createCell(0).setCellValue("Validation Index");
+         	}
 		 	}
-	  FileOutputStream fileOut = new FileOutputStream("(formatted).xls");
+	  FileOutputStream fileOut = new FileOutputStream(result+"(formatted).xls");
       wbwrite.write(fileOut);
       fileOut.close();
-      System.out.println("WorkBook has been created");
+     // System.out.println("WorkBook has been created");
 	 }
 	//row ends
  ta.setText(s2);
