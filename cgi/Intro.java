@@ -18,13 +18,16 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -93,7 +96,7 @@ public void read_write(String result) throws IOException{
 		Workbook wbwrite = new HSSFWorkbook();
 		CreationHelper createHelper = wbwrite.getCreationHelper();
 		Sheet sheet_write = wbwrite.createSheet("new sheet");
-	
+		FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 		//to read
 		FileInputStream myStream = new FileInputStream(result);
 	    NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
@@ -186,7 +189,7 @@ public void read_write(String result) throws IOException{
 	        continue;
 				 }
 				 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-                     System.out.print(currentCell.getNumericCellValue() + "--");
+                   //  System.out.print(currentCell.getNumericCellValue() + "--");
                      
     				 if(i>=6&& iCell ==9){
     					 double value = currentCell.getNumericCellValue();
@@ -196,7 +199,7 @@ public void read_write(String result) throws IOException{
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());    
 				 }
 				 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
-                     System.out.print(currentCell.getStringCellValue() + "--");
+                  //   System.out.print(currentCell.getStringCellValue() + "--");
     				 if(i>=6&& iCell ==9){
     					 String value = currentCell.getStringCellValue();
     					 String newValue = value.replaceAll("-","");
@@ -210,7 +213,7 @@ public void read_write(String result) throws IOException{
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getCellFormula());    
 				 }
 				 else if (currentCell.getCellTypeEnum() == CellType.ERROR) {
-                    System.out.print(currentCell.getStringCellValue() + "--");
+                  //  System.out.print(currentCell.getStringCellValue() + "--");
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());    
 				 	}
 				 
@@ -225,7 +228,20 @@ public void read_write(String result) throws IOException{
         	 rowwrite[i]=sheet_write.getRow((short)i);;
 
  		 rowwrite[i].createCell(0).setCellFormula("CONCATENATE(F"+counter1+",D"+counter2+")");
+ 		 
+ 		 
+ 		CellReference cellReference = new CellReference("A"+counter1);
+ 		Row rowF = sheet_write.getRow(cellReference.getRow());
+ 		Cell cellF = rowF.getCell(cellReference.getCol()); 
+ 		System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+ 		CellValue cellValue = evaluator.evaluate(cellF);
+ 		System.out.println("  "+cellValue.getStringValue());
+ 		rowwrite[i].createCell(0).setCellValue(cellValue.getStringValue());
  		 counter1+=1;counter2+=1;
+         }
+         	
+         if(i==7){
+        	 
          }
          	if(i==5){
          		rowwrite[i]=sheet_write.getRow((short)i);;
@@ -240,7 +256,22 @@ public void read_write(String result) throws IOException{
 	//row ends
  ta.setText(s2);
 }
+
+public void Vlookup() throws IOException{
+	Workbook wbwrite = new HSSFWorkbook();
+	CreationHelper createHelper = wbwrite.getCreationHelper();
+	
+	FileInputStream myStream = new FileInputStream("Njoyn Master Tracker-16-18.xls(formatted).xls");
+    NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
+    FileInputStream myStreama = new FileInputStream("Candidate Referrals (Generic).xls(formatted).xls");
+    NPOIFSFileSystem fsa = new NPOIFSFileSystem(myStreama);
+	Sheet sheet_write = wbwrite.createSheet("new sheet");
+	Row rowwrite = sheet_write.getRow(6);
+	 rowwrite.createCell(23).setCellFormula("(VLOOKUP(A7,'[Candidate Referrals (Generic).xls(formatted).xls]new sheet'!$1:$65536,7,0)");
+	 
+}
 public static void main(String[] args) throws IOException{
-	new Intro();
+	Intro o = new Intro();
+
 }
 }
