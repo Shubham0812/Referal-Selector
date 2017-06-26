@@ -25,79 +25,97 @@ import org.apache.poi.ss.usermodel.Workbook;
 public class Vlookup {
 	
 Vlookup() throws IOException{
-	Workbook wbwrite = new HSSFWorkbook();
-	Sheet sheet_write = wbwrite.createSheet("new sheet");
-	 FileInputStream myStream2 = new FileInputStream("demo3.xls");
-	 NPOIFSFileSystem fs2 = new NPOIFSFileSystem(myStream2);
-	 HSSFWorkbook wb2 = new HSSFWorkbook(fs2.getRoot(), true);
-	 FileInputStream myStream = new FileInputStream("demo2.xls");
-	 NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
-	 HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
-	 
-	  int xo = wbwrite.linkExternalWorkbook("demo3.xls", wb);
-	 
-	 HSSFSheet sheet = wb.getSheetAt(0);
-	 HSSFSheet sheet2 = wb2.getSheetAt(0);
-	 HSSFRow row,row2;
-	 HSSFCell cell,cell2;
-	 int rowStart = sheet.getFirstRowNum(),rowStart2 = sheet2.getFirstRowNum() ;
-	 int rowEnd = sheet.getLastRowNum(),rowEnd2 = sheet2.getLastRowNum();
-	 int fCell,lCell,fCell2,lCell2;
-	 Row rowwrite[] =new Row[rowEnd+1];Row rowwrite2[] =new Row[rowEnd2+1];
-	 FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
-
-	 Map<String,FormulaEvaluator> mapper = new HashMap<String,FormulaEvaluator>(); 
-	 
-	/* Collection<String> list = new ArrayList<String>();
-	 list = AnalysisToolPak.getSupportedFunctionNames();
-	 System.out.println(list);   */
-	 
-	 for(int i=rowStart;i<=rowEnd;i++){
-		 row=sheet.getRow(i);
+	
+	 Workbook wb = new HSSFWorkbook();  // or new XSSFWorkbook();
+	    Sheet sheet1 = wb.createSheet("first sheet");
+	    Sheet sheet2 = wb.createSheet("second sheet");
+	    
+	    FileInputStream myStream = new FileInputStream("demo2.xls");
+	    NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
+	    HSSFWorkbook wbread = new HSSFWorkbook(fs.getRoot(), true);
+	    HSSFSheet sheetx  = wbread.getSheetAt(0);
+	    HSSFSheet sheetx2 = wbread.getSheet("second sheet");
+	    HSSFRow row,row2;
+	    HSSFCell cell,cell2;
+   int counter = 1;
+   int rowStart = sheetx.getFirstRowNum() ;int rowStart2 = sheetx2.getFirstRowNum();
+   int rowEnd = sheetx.getLastRowNum() ;int rowEnd2 = sheetx2.getLastRowNum();
+   int fCell,fCell2,lCell,lCell2;
+   Row rowwrite[] =new Row[rowEnd+1];Row rowwrite2[] =new Row[rowEnd2+1];
+   for(int i=rowStart;i<=rowEnd;i++){
+		 row=sheetx.getRow(i);
 		 if(row==null){
-			 System.out.println("empty accessed");
-			 continue;}
-		 if(row!=null){
-			 rowwrite[i]=sheet_write.createRow((short)i);;
-			 System.out.println("Last cell : " +row.getLastCellNum());
-				 fCell = row.getFirstCellNum(); 
-				 lCell = row.getLastCellNum();
-				 for (int iCell = fCell; iCell < lCell; iCell++) {
-					 cell = row.getCell(iCell);
-					 if(cell==null){
-		    		 continue; 
-					 }
-		    	 else{
-		    		 Cell currentCell = cell;
-		    		 	 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-		    		 	//	System.out.print(currentCell.getNumericCellValue() + "--");
-		    		 		rowwrite[i].createCell(iCell).setCellValue(currentCell.getNumericCellValue());
-		    		 	}
-		    		 	else if(currentCell.getCellTypeEnum() == CellType.STRING){
-					  		String value = currentCell.getStringCellValue();
-					  		rowwrite[i].createCell(iCell).setCellValue(currentCell.getRichStringCellValue());
-		    		 	}
-		    	 }
-		     }
-				 if(i>=1){
-					// try{
-					 mapper.put("demo3.xls",evaluator);
-					 mapper.put("demo2.xls",wb2	.getCreationHelper().createFormulaEvaluator());
-					 evaluator.setupReferencedWorkbooks(mapper);
-					//System.out.print(mapper);
-		    		rowwrite[i].createCell(3).setCellFormula("VLOOKUP(A3,'[demo3.xls]new sheet'!$1:$65536,3,0)");
-					// }catch(Exception e){}
-				 }
-		 }
-		 FileOutputStream fileOut = new FileOutputStream("demo2.xls");
-		wbwrite.write(fileOut);
-		fileOut.close();
-		//System.out.println("WorkBook has been created");
-			  }
-	 wb2.close();
-	 wb.close();
-	 
+	    		System.out.println("empty accessed");
+			continue;
+			}
+	 if(row!=null){
+		 rowwrite[i]=sheet1.createRow((short)i);;
+		 System.out.println("Last cell : " +row.getLastCellNum());
+			 fCell = row.getFirstCellNum(); 
+	     lCell = row.getLastCellNum();
+	     
+	     for (int iCell = fCell; iCell < lCell; iCell++) {
+	    	 cell = row.getCell(iCell);
+	    	 if(cell==null){
+	    		 continue; 
+	    	 }
+	    	 else{
+	    		 Cell currentCell = cell;
+	    		 	 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+	    		 		System.out.print(currentCell.getNumericCellValue() + "--");
+	    		 		rowwrite[i].createCell(iCell).setCellValue(currentCell.getNumericCellValue());
+	    		 	}
+	    		 	else if(currentCell.getCellTypeEnum() == CellType.STRING){
+				  		String value = currentCell.getStringCellValue();
+				  		rowwrite[i].createCell(iCell).setCellValue(currentCell.getRichStringCellValue());
+	    		 	}
+	    	 }
+	     }
+	 }
+	 rowwrite[0].createCell(3).setCellValue("Missing values");
+	 rowwrite[i].createCell(3).setCellFormula("VLOOKUP(A"+counter+",'second sheet'!1:65536,3,0)");
+	 counter++;
+   }
+   
+   for(int i=rowStart2;i<=rowEnd2;i++){
+		 row2=sheetx2.getRow(i);
+		 if(row2==null){
+	    		System.out.println("empty accessed");
+			continue;
+			}
+	 if(row2!=null){
+		 rowwrite2[i]=sheet2.createRow((short)i);;
+		 System.out.println("Last cell : " +row2.getLastCellNum());
+			 fCell2 = row2.getFirstCellNum(); 
+	     lCell2 = row2.getLastCellNum();
+	     
+	     for (int iCell = fCell2; iCell < lCell2; iCell++) {
+	    	 cell = row2.getCell(iCell);
+	    	 if(cell==null){
+	    		 continue; 
+	    	 }
+	    	 else{
+	    		 Cell currentCell = cell;
+	    		 	 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+	    		 		System.out.print(currentCell.getNumericCellValue() + "--");
+	    		 		rowwrite2[i].createCell(iCell).setCellValue(currentCell.getNumericCellValue());
+	    		 	}
+	    		 	else if(currentCell.getCellTypeEnum() == CellType.STRING){
+				  		String value = currentCell.getStringCellValue();
+				  		rowwrite2[i].createCell(iCell).setCellValue(currentCell.getRichStringCellValue());
+	    		 	}
+	    	 }
+	     }
+	 }
 }
+   	//sheet2.createRow(0).createCell(0).setCellValue("ID");
+	FileOutputStream fileOut = new FileOutputStream("demo2.xls");
+	 wb.write(fileOut);;
+	fileOut.close();
+	System.out.println("WorkBook has been created");
+   }
+	
+	                        
 
 public static void main(String[] args) throws IOException{
 new Vlookup();
