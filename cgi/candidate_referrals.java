@@ -18,12 +18,15 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -86,8 +89,7 @@ public void modify(String result) throws IOException{
 	Workbook wbwrite = new HSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
 	Sheet sheet_write = wbwrite.createSheet("new sheet");
-	
-	
+	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	FileInputStream myStream = new FileInputStream(result);
     NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
     HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
@@ -165,8 +167,14 @@ public void modify(String result) throws IOException{
      	}//for ends
 	         	if(i>=6){
 	           	 rowwrite[i]=sheet_write.getRow((short)i);;
-
 	    		 rowwrite[i].createCell(0).setCellFormula("CONCATENATE(H"+counter1+",U"+counter2+")");
+	    		 CellReference cellReference = new CellReference("A"+counter1);
+	    	 		Row rowF = sheet_write.getRow(cellReference.getRow());
+	    	 		Cell cellF = rowF.getCell(cellReference.getCol()); 
+	    	 		System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+	    	 		CellValue cellValue = evaluator.evaluate(cellF);
+	    	 		System.out.println("  "+cellValue.getStringValue());
+	    	 		rowwrite[i].createCell(0).setCellValue(cellValue.getStringValue());
 	    		 counter1+=1;counter2+=1;
 	            }
 	         	if(i==5){
