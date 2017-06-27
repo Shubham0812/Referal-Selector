@@ -68,9 +68,13 @@ public void read_write(String result) throws IOException{
 	//to write a new formatted Master Tracker
 	Workbook wbwrite = new HSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
-	Sheet sheet_write = wbwrite.createSheet("new sheet");
+	
+	Sheet sheet_write = wbwrite.createSheet("Sheet1");
+	Sheet sheet_write2 = wbwrite.createSheet("Sheet2");
+	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	//to read Master tracker from the file selected by the user
+	
 	FileInputStream myStream = new FileInputStream(result);
 	NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
 	HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
@@ -202,10 +206,15 @@ public void read_write(String result) throws IOException{
          	if(i==5){
          		rowwrite[i]=sheet_write.getRow((short)i);;
          		rowwrite[i].createCell(0).setCellValue("Validation Index");}}//row not null ends
+	
+	  String ss = result;
+	 System.out.println(result);
+      System.out.println("WorkBook has been created");
+      }//row ends
+	
 	  FileOutputStream fileOut = new FileOutputStream(result+"(formatted).xls");
       wbwrite.write(fileOut);
       fileOut.close();
-      System.out.println("WorkBook has been created");}//row ends
 	  ta.setText(s2);
 	  wbwrite.close();
 	  wb.close();
