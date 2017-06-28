@@ -1,52 +1,250 @@
 package cgi;
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import org.apache.poi.hssf.usermodel.*;
+import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
+
+import java.awt.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 public class Intro{
-JLabel file_selected;
 JFrame f;
-JLabel ta;
+JLabel ta,label1,label2,label3,error;
+JButton b,ba,b1,b2,b3,submit,Vb1,Vb2;
 JProgressBar jb;    
-int i=0,num=0;     
+String result,result2;
+String outputFile1,outputFile2;
+int i=0,num=0;    
+int code;
+boolean both_set = false;
 //constructor
 
 Intro() throws IOException {
-		f = new JFrame("Beta One");
-		JButton b = new JButton("Select File");
-		file_selected = new JLabel();
-		ta = new JLabel("Select the File for the Master Tracker");
-		b.setBounds(10, 30, 150, 30);
-		file_selected.setBounds(550, 130, 500, 30);
-		ta.setBounds(200,20,600,600); 
-		ta.setBackground(new Color(255,255,255));
-		f.add(b);f.add(file_selected);f.add(ta);
-		f.setSize(1000,500);
+		JFrame.setDefaultLookAndFeelDecorated(true);	
+		f = new JFrame("Master Tracker Generator");
 		f.setLayout(null);
+		b = new JButton("Select Master Tracker File");
+		b.setBounds(460, 130, 350, 30);
+		ba = new JButton("Select Candidate (Generic) File");
+		ba.setBounds(460, 200, 350, 30);
+		ba.setVisible(false);
+		b.setVisible(false);
+		b1 = new JButton("Module 1: ");
+		b1.setBounds(10, 130, 150,30);
+		b2 = new JButton("Module 2: ");
+		b2.setBounds(10, 200, 150,30);
+		b3 = new JButton("Module 3: ");
+		b3.setBounds(10, 270, 150, 30);
+		submit = new JButton("Submit Selected File");
+		submit.setBounds(370,320,200,30);
+		submit.setVisible(false);
+		Vb1= new JButton("Select Master Tracker File");
+		Vb1.setBounds(460,270,210,30);
+		Vb1.setVisible(false);
+		Vb2= new JButton("Select Candiate Referral File");
+		Vb2.setBounds(680,270,210,30);
+		Vb2.setVisible(false);
+		label1 = new JLabel("Format Master Tracker");
+		label1.setBounds(190, 130, 500, 30);
+		label2 = new JLabel("Format Candidate Referral");
+		label2.setBounds(190, 200, 500, 30);
+		label3 = new JLabel("Perform VLookup");
+		label3.setBounds(190, 270, 500, 30);
+		error = new JLabel("");
+		error.setBounds(400, 430, 350, 30);
+		ta = new JLabel("Member Referral Validation Automator",SwingConstants.CENTER);
+		ta.setBounds(200,0,600,100); 
+		ta.setFont(new Font("Courier New", Font.BOLD, 22));
+		ta.setBackground(new Color(122,38,165));
+		f.add(b);f.add(label1);f.add(ta);f.add(b1);f.add(b2);f.add(b3);f.add(ba);f.add(label2);f.add(label3);f.add(error);f.add(Vb1);f.add(Vb2);
+		f.add(submit);
+		f.setSize(1000,500);
 		f.getContentPane().setBackground(new Color(255,255,255));
-		//f.setLocation(400,100);
+		f.setLocation(240,20);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		b1.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        b.setVisible(true);
+	        error.setText("");
+	        b2.setEnabled(false);
+	        b3.setEnabled(false);}			
+	     });
+		b2.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        ba.setVisible(true);
+	        b1.setEnabled(false);
+	        b3.setEnabled(false);}			
+	     });
+		
+		b3.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        try {
+		        b1.setEnabled(false);
+		        b2.setEnabled(false);
+		        Vb1.setVisible(true);
+		        Vb2.setVisible(true);
+				//new SheetCopy();
+				//finish();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}}			
+	     });
+		
+		Vb1.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        				error.setText("");
+	        	//provide user to select the file
+	        	  outputFile1 = selectfile();
+	        	 if(outputFile1==null){
+	        	 error.setText("Master Tracker File Not Choosed");
+	        /*	 Vb1.setVisible(false);
+	        	 Vb2.setVisible(false);
+	        	 b1.setEnabled(true);
+	        	 b2.setEnabled(true);
+	        	 b3.setEnabled(true);*/
+	        	 return;
+	        	 }
+	        		// code=3;
+	        		 //submit.setVisible(true);
+	        		 //read_write(result);
+					 }
+	     });
+		Vb2.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        				error.setText("");
+	        	//provide user to select the file
+	        	  outputFile2 = selectfile();
+	        	 if(outputFile2==null){
+	        	 error.setText("Candidate Referral File Not Choosed");
+
+	        	 return;
+	        	 }
+	        	 if(outputFile1!=null&&outputFile2!=null){
+	        		   code=3;
+	        		 submit.setVisible(true);
+	        	        	 }
+					 }
+	     });
 		b.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-        				
+        				error.setText("");
         	//provide user to select the file
-        	 String result = selectfile();
+        	  result = selectfile();
         	 if(result==null){
-        	 ta.setText("No File Choosen");
-        	 return;}
-        	 try {
-        		 read_write(result);
-				 }catch(IOException e1) {}
-        	}
+        	 error.setText("No File Choosen");
+        	 b.setVisible(false);
+        	 b2.setEnabled(true);
+        	 b3.setEnabled(true);
+        	 return;
+        	 }
+        		 code=1;
+        		 submit.setVisible(true);
+        		 //read_write(result);
+				 }
      });
+		
+		ba.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        				
+	        	//provide user to select the file
+	        	 result2 = selectfile();
+	        	 if(result2==null){
+	        	 error.setText("No File Choosen");
+	        	 ba.setVisible(false);
+	        	 b1.setEnabled(true);
+	        	 b3.setEnabled(true);
+	        	 return;
+	        	 }
+	        		 code=2;
+	        		 submit.setVisible(true);
+
+					 }
+	     });
+		
+		submit.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	        	
+	        	if(code==1){
+	        	try {
+					read_write(result);
+	        	} catch (IOException e1) {}
+	        			   }
+	        	
+	        	if(code==2){
+	        		try{
+	        		 candidate_referrals obj = new candidate_referrals();
+	        		 obj.modify(result2);
+	        		 finish();
+	        		 submit.setVisible(false);
+	        		 b1.setEnabled(true);
+	        		 b3.setEnabled(true);
+	        		}catch(Exception code2){
+	        			error.setText("Invalid File Selected");
+	        			ba.setVisible(false);
+	               	 	b1.setEnabled(true);
+	               	 	b2.setEnabled(true);
+	               	 	b3.setEnabled(true);
+	        		}
+	        	}
+	        	if(code==3){
+	        		try{
+	        		new SheetCopy(outputFile1,outputFile2);
+	        		finish();
+		        	 Vb1.setVisible(false);
+		        	 Vb2.setVisible(false);
+		        	 b1.setEnabled(true);
+		        	 b2.setEnabled(true);
+		        	 b3.setEnabled(true);  
+		        	 submit.setVisible(false);
+	        		
+	        		}catch(Exception Vlook){
+	        			
+	        		}
+	        	}
+	      }
+	     });
+		
+
+		
+		
 	
 }
+
+public void checkButtonPress(String result,int code){
+	
+}
+
 
 //file chooser option to select a file for master tracker
 public String selectfile(){
@@ -57,11 +255,12 @@ public String selectfile(){
 	if (result == JFileChooser.APPROVE_OPTION) {
 	File selectedFile = fileChooser.getSelectedFile();
 	String filePath = selectedFile.getPath();
-	file_selected.setText("Selected file: " + filePath);
 	return filePath;
 	}
 	return null;
 }
+
+
 
 //to read the Master tracker and apply the modifications to generate a new file
 public void read_write(String result) throws IOException{
@@ -74,7 +273,7 @@ public void read_write(String result) throws IOException{
 	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	//to read Master tracker from the file selected by the user
-	
+	try{
 	FileInputStream myStream = new FileInputStream(result);
 	NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
 	HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
@@ -86,15 +285,9 @@ public void read_write(String result) throws IOException{
 	int rowEnd =   sheet.getLastRowNum();
 	Row rowwrite[] =new Row[rowEnd+1];
 	System.out.println(rowStart + "  "+rowEnd);
-	String s1 = "",s2="";
     int counter1 = 7;
     int counter2 = 7;	    
 	//font style to set font as bold
-	CellStyle style = wbwrite.createCellStyle();
-	Font font = wbwrite.createFont();font.setFontHeightInPoints((short)11);
-	font.setFontName(HSSFFont.FONT_ARIAL);
-	font.setBold(true);
-	style.setFont(font); 
 	//code to iterate over the rows  
 	for(int i=rowStart;i<=rowEnd;i++){
 	row=sheet.getRow(i);
@@ -142,7 +335,9 @@ public void read_write(String result) throws IOException{
     						 String newValue = value.replaceAll("\\s","");
         					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
         					 continue;
-    					 }}}}
+    					 }}
+    				   	 }
+		 				}
 		 //if the cell has value determine the type of value.
 		 else{
 		 //getting reference of current cell
@@ -153,6 +348,7 @@ public void read_write(String result) throws IOException{
 			// String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
 		   	// rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);	 
 			 if(i>=6 && iCell==5 ||i>=6 && iCell==6){
+				 try{
 				 CellStyle dateStyle = wbwrite.createCellStyle();
 	    		 dateStyle.setDataFormat(
 	    		 createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
@@ -160,7 +356,9 @@ public void read_write(String result) throws IOException{
 	   	         writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
 	   	         writeDate.setCellStyle(dateStyle); 
 	   	         sheet_write.setColumnWidth(iCell,1100*4);
-	   	         continue;}
+	   	         continue;
+				 }catch(Exception ex){}
+			 }
 			 
 			 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
 		//		 System.out.print(currentCell.getNumericCellValue() + "--");       
@@ -179,7 +377,10 @@ public void read_write(String result) throws IOException{
     					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
     					 }catch(Exception e){
     					 String newValue = value.replaceAll("\\s","");
-        				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");}
+    					 try{
+        				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+        				 }catch(Exception af){}
+    					 }
     					 continue;}
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getStringCellValue());}
 				 else if(currentCell.getCellTypeEnum() == CellType.FORMULA){
@@ -188,13 +389,14 @@ public void read_write(String result) throws IOException{
 				 else if (currentCell.getCellTypeEnum() == CellType.ERROR){
                   // System.out.print(currentCell.getStringCellValue() + "--");
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());}
-			 s1=""+cell;
-			 s2 += s1 + "\t";}}//cell for loop ends
-             s2+= "\n";
+			 
+			 }}//cell for loop ends
+  
          //Validation Index Calculation
          	if(i>=6){
          		rowwrite[i]=sheet_write.getRow((short)i);;
          		rowwrite[i].createCell(0).setCellFormula("CONCATENATE(F"+counter1+",D"+counter2+")");
+         		
          		CellReference cellReference = new CellReference("A"+counter1);
          		Row rowF = sheet_write.getRow(cellReference.getRow());
          		Cell cellF = rowF.getCell(cellReference.getCol()); 
@@ -207,19 +409,34 @@ public void read_write(String result) throws IOException{
          		rowwrite[i]=sheet_write.getRow((short)i);;
          		rowwrite[i].createCell(0).setCellValue("Validation Index");}}//row not null ends
 	
-	  String ss = result;
 	 System.out.println(result);
       System.out.println("WorkBook has been created");
       }//row ends
-	
-	  FileOutputStream fileOut = new FileOutputStream(result+"(formatted).xls");
+	  String path = result.replaceAll(".xls","");
+	  FileOutputStream fileOut = new FileOutputStream(path+"(Output1).xls");
       wbwrite.write(fileOut);
       fileOut.close();
-	  ta.setText(s2);
+      
+      File look = new File(path+"(Output1).xls");
+	  String output = look.getPath();
+      Runtime.getRuntime().exec("explorer.exe /select," + output);
+
+ 	 b.setVisible(false);
+ 	 submit.setVisible(false);
+ 	 b2.setEnabled(true);
+ 	 b3.setEnabled(true);
 	  wbwrite.close();
 	  wb.close();
 	  fs.close();
 	  finish();
+	}catch(Exception e)
+	{
+		error.setText("Invalid File Selected");
+		b.setVisible(false);
+   	 	b2.setEnabled(true);
+   	 	b3.setEnabled(true);
+		return;
+		}
 }
 
 public void showProgress(){
@@ -239,7 +456,7 @@ while(i<=2000){
 }
 
 public void finish(){
-	ta.setText("Finished!");
+	error.setText("Finished!");
 }
 
 
