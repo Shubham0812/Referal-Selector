@@ -1,7 +1,6 @@
 package cgi;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -26,7 +25,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -61,7 +59,7 @@ public void modify(String result) throws IOException{
 	Sheet sheet_write = wbwrite.createSheet("new sheet");
 	
 	Workbook wbmain = new HSSFWorkbook(); 
-	Sheet sheet2 = wbmain.getSheet("Sheet 2");
+	wbmain.getSheet("Sheet 2");
 	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	FileInputStream myStream = new FileInputStream(result);
@@ -76,8 +74,6 @@ public void modify(String result) throws IOException{
     int rowEnd = sheet.getLastRowNum();
 	Row rowwrite[] =new Row[rowEnd+1];
     System.out.println(rowStart + "  "+rowEnd);
-    int cols = 0; // No of columns
-    String s1 = "",s2="";
     int counter1 = 7;
     int counter2 = 7;
 	for(int i=rowStart;i<=rowEnd;i++){
@@ -99,9 +95,6 @@ public void modify(String result) throws IOException{
 					//getting reference of current cell
 					 Cell currentCell = cell;
 					 sheet_write.autoSizeColumn(iCell);
-					 DataFormatter dataFormatter = new DataFormatter();
-					// String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
-					// rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);
 					 
 					 if(i>=6 && iCell==10||i>=6 && iCell==12 ||i>=6 && iCell==13||i>=6 && iCell==14||i>=6 && iCell==20 ){
 						 try{
@@ -134,9 +127,6 @@ public void modify(String result) throws IOException{
 	                    System.out.print(currentCell.getStringCellValue() + "--");
 	                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());    
 					 	}
-					 
-				 s1=""+cell;
-				 s2 += s1 + "\t";
 			 }
      	}//for ends
 	         	if(i>=6){
@@ -163,6 +153,10 @@ public void modify(String result) throws IOException{
 	  FileOutputStream fileOut = new FileOutputStream(path+"(Output2).xls");
       wbwrite.write(fileOut);
       fileOut.close();    
+      wbmain.close();
+      wbwrite.close();
+      fs.close();
+      wb.close();
       File look = new File(path+"(Output2).xls");
 	  String output = look.getPath();
       Runtime.getRuntime().exec("explorer.exe /select," + output);
