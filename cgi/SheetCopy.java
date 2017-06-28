@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -18,22 +21,35 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 public class SheetCopy {
-SheetCopy() throws IOException{
+
+	
+SheetCopy(String output1,String output2) throws IOException{
+	
+	
+	
 	 Workbook wb = new HSSFWorkbook();  // or new XSSFWorkbook();
 	 Sheet sheet1 = wb.createSheet("Sheet1");
 	 Sheet sheet2 = wb.createSheet("Sheet2");
+	 int puu =  7;
+     CellStyle style = wb.createCellStyle();
+     Font font = wb.createFont();
+     font.setFontHeightInPoints((short)11);
+     font.setFontName(HSSFFont.FONT_ARIAL);
+     font.setBold(true);
+     style.setFont(font); 
 	 
-	 FileInputStream myStream = new FileInputStream("Njoyn Master Tracker-16-18.xls");
+	 FileInputStream myStream = new FileInputStream(output1);
 	 NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
 	 HSSFWorkbook wbread = new HSSFWorkbook(fs.getRoot(), true);
 	 
-	 FileInputStream myStream2 = new FileInputStream("Candidate Referrals (Generic).xls");
+	 FileInputStream myStream2 = new FileInputStream(output2);
 	 NPOIFSFileSystem fs2 = new NPOIFSFileSystem(myStream2);
 	 HSSFWorkbook wbread2 = new HSSFWorkbook(fs2.getRoot(), true);	
 	 CreationHelper createHelper = wb.getCreationHelper();
@@ -43,14 +59,16 @@ SheetCopy() throws IOException{
 	    int counter1 = 7;int counter1a = 7;
 	    int counter2 = 7;int counter2a = 7;int count = 7;
 	 HSSFCell cell,cell2;
+	 
 	
 	   int rowStart = sheetx.getFirstRowNum() ;int rowStart2 = sheetx2.getFirstRowNum();
 	   int rowEnd = sheetx.getLastRowNum() ;int rowEnd2 = sheetx2.getLastRowNum();
 	   int fCell,fCell2,lCell,lCell2;
 	   FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
 	   Row rowwrite[] =new Row[rowEnd+1];Row rowwrite2[] =new Row[rowEnd2+1];
-	   Row edit1a = sheetx.getRow(7);
-	   Cell edit1b = edit1a.getCell(20);
+
+	   
+	   
 	   
 		for(int i=rowStart;i<=rowEnd;i++){
 			row=sheetx.getRow(i);
@@ -116,10 +134,10 @@ SheetCopy() throws IOException{
 			   	         writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
 			   	         writeDate.setCellStyle(dateStyle); 
 			   	         sheet1.setColumnWidth(iCell,1100*4);
-			   	         sheet1.setColumnWidth(20,1100*4);
-			   	         sheet1.setColumnWidth(21,1100*4);
-			   	         sheet1.setColumnWidth(22,1100*4);
-			   	         sheet1.setColumnWidth(23,1100*4);
+			   	         sheet1.setColumnWidth(20,1200*4);
+			   	         sheet1.setColumnWidth(21,1200*4);
+			   	         sheet1.setColumnWidth(22,1400*4);
+			   	         sheet1.setColumnWidth(23,1400*4);
 			   	         continue;}
 					 
 					 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
@@ -168,7 +186,8 @@ SheetCopy() throws IOException{
 
 					if(i>=6){
 						 rowwrite[5].createCell(20).setCellValue("Referred By");
-						 rowwrite[i].createCell(20).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,6,0)");	
+						 rowwrite[i].createCell(20).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,6,0)");				
+						 
 						 
 						 rowwrite[5].createCell(21).setCellValue("Referred By Email");
 						 rowwrite[i].createCell(21).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,7,0)");
@@ -178,7 +197,7 @@ SheetCopy() throws IOException{
 						 
 			         		
 						 rowwrite[5].createCell(23).setCellValue("Referred By Email");
-						 rowwrite[i].createCell(23).setCellFormula("IF(S"+count+"=0,V"+count+",V"+count+")");
+						 rowwrite[i].createCell(23).setCellFormula("IF(S"+count+"=0,V"+count+",S"+count+")");
 						 count++;
 						 
 					}
@@ -190,8 +209,15 @@ SheetCopy() throws IOException{
 }//row not null ends
 
 		      System.out.println("WorkBook has been created");
-		      }
-	   
+		      if(i>=5){		    
+		    	  for(int x =0;x<rowwrite[5].getLastCellNum();x++){
+			   Cell co = sheet1.getRow(5).getCell(x);
+				co.setCellStyle(style);
+		      }}
+		      
+
+}
+	
 	   
 	   /*for(int i=rowStart;i<=rowEnd;i++){
 			 row=sheetx.getRow(i);
@@ -306,7 +332,12 @@ SheetCopy() throws IOException{
 						}		
 
 			            System.out.println("WorkBook has been created");
-			}
+		      if(i1>=5){		    
+		    	  for(int x =0;x<rowwrite2[5].getLastCellNum();x++){
+			   Cell co = sheet2.getRow(5).getCell(x);
+				co.setCellStyle(style);
+		      }}			            
+}
 	   
 	   
 	   
@@ -342,15 +373,19 @@ SheetCopy() throws IOException{
 		 }
 	}*/
 	   	//sheet2.createRow(0).createCell(0).setCellValue("ID");
-		FileOutputStream fileOut = new FileOutputStream("Njoyn Master Tracker-16-18.xls(formatted).xls");
+		FileOutputStream fileOut = new FileOutputStream("VLookupFile.xls");
 		 wb.write(fileOut);;
 		fileOut.close();
 		System.out.println("Finale WorkBook has been created"); 
-		Desktop.getDesktop().open(new File("C:\\Users\\shubham.k.singh\\Desktop\\cgi\\cgi"));
+		File output = new File("VLookupFile.xls");
+		String path = output.getPath();
+		Runtime.getRuntime().exec("explorer.exe /select," + path);
 }
 			
 
 public static void main(String[] args) throws IOException{
-	new SheetCopy();
+	String output1 = "Njoyn Master Tracker-16-18.xls";
+	String output2 ="Candidate Referrals (Generic).xls";
+	new SheetCopy(output1,output2);
 }
 }
