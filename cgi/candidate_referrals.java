@@ -1,6 +1,7 @@
 package cgi;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -32,44 +33,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 public class candidate_referrals {
-	JLabel file_selected;
-	JFrame f;
-	JTextArea ta;
+	static JLabel file_selected;
+	static JFrame f;
+	static JTextArea ta;
 	//constructor
 	
 	candidate_referrals() throws IOException{
-		f = new JFrame("Beta One");
-		JButton b = new JButton("Select File");
-		file_selected = new JLabel();
-		 ta = new JTextArea("Select the File for the Candidate Referral");
-		b.setBounds(10, 30, 150, 30);
-		file_selected.setBounds(550, 130, 500, 30);
-		ta.setBounds(200,20,600,600); 
-		ta.setBackground(new Color(255,255,255));
-		f.add(b);f.add(file_selected);f.add(ta);
-		f.setSize(1000,500);
-		f.setLayout(null);
-		f.getContentPane().setBackground(new Color(255,255,255));
-		//f.setLocation(400,100);
-		f.setVisible(true);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		b.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	        			//provide user to select the file
-	        			String result = selectfile();
-	        			if(result==null){
-	        				ta.setText("No File Choosen");
-	        				return;
-	        			}
-	        			try {
-							modify(result);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-	        	}
-		});
+
 	}
 public String selectfile(){
 	 //file chooser
@@ -89,6 +59,10 @@ public void modify(String result) throws IOException{
 	Workbook wbwrite = new HSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
 	Sheet sheet_write = wbwrite.createSheet("new sheet");
+	
+	Workbook wbmain = new HSSFWorkbook(); 
+	Sheet sheet2 = wbmain.getSheet("Sheet 2");
+	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	FileInputStream myStream = new FileInputStream(result);
     NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
@@ -126,10 +100,11 @@ public void modify(String result) throws IOException{
 					 Cell currentCell = cell;
 					 sheet_write.autoSizeColumn(iCell);
 					 DataFormatter dataFormatter = new DataFormatter();
-					 String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
-					 rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);
+					// String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
+					// rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);
 					 
 					 if(i>=6 && iCell==10||i>=6 && iCell==12 ||i>=6 && iCell==13||i>=6 && iCell==14||i>=6 && iCell==20 ){
+						 try{
 		    			 CellStyle dateStyle = wbwrite.createCellStyle();
 		    		       dateStyle.setDataFormat(
 		    		           createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
@@ -137,9 +112,8 @@ public void modify(String result) throws IOException{
 		   	            writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
 		   	            writeDate.setCellStyle(dateStyle); 
 		   	         sheet_write.setColumnWidth(iCell,1100*4);
-		        continue;
+		        continue;}catch(Exception e){}
 					 }
-					 
 					 
 					 
 					 
@@ -182,15 +156,50 @@ public void modify(String result) throws IOException{
 	         		 rowwrite[i].createCell(0).setCellValue("Validation Index");
 	        	}
 				}		
-	      	  FileOutputStream fileOut = new FileOutputStream(result+"(formatted).xls");
-	            wbwrite.write(fileOut);
-	            fileOut.close();
+
 	            System.out.println("WorkBook has been created");
 	}//row ends
-	       ta.setText(s2);
+	String path = result.replaceAll(".xls","");
+	  FileOutputStream fileOut = new FileOutputStream(path+"(Output2).xls");
+      wbwrite.write(fileOut);
+      fileOut.close();    
+      File look = new File(path+"(Output2).xls");
+	  String output = look.getPath();
+      Runtime.getRuntime().exec("explorer.exe /select," + output);
  }
 public static void main(String[] args) throws IOException{
-		new candidate_referrals();
+	f = new JFrame("Beta One");
+	JButton b = new JButton("Select File");
+	file_selected = new JLabel();
+	 ta = new JTextArea("Select the File for the Candidate Referral");
+	b.setBounds(10, 30, 150, 30);
+	file_selected.setBounds(550, 130, 500, 30);
+	ta.setBounds(200,20,600,600); 
+	ta.setBackground(new Color(255,255,255));
+	f.add(b);f.add(file_selected);f.add(ta);
+	f.setSize(1000,500);
+	f.setLayout(null);
+	f.getContentPane().setBackground(new Color(255,255,255));
+	//f.setLocation(400,100);
+	f.setVisible(true);
+	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	candidate_referrals o = new candidate_referrals();
+	b.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+        			//provide user to select the file
+        			String result = o.selectfile();
+        			if(result==null){
+        				ta.setText("No File Choosen");
+        				return;
+        			}
+        			try {
+						o.modify(result);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+        	}
+	});
 	}
 	
 }
