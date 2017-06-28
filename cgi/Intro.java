@@ -1,7 +1,5 @@
 package cgi;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -17,7 +15,6 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -28,8 +25,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormatter;
-
 import java.awt.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -43,7 +38,7 @@ JButton b,ba,b1,b2,b3,submit,Vb1,Vb2;
 JProgressBar jb;    
 String result,result2;
 String outputFile1,outputFile2;
-int i=0,num=0;    
+int i=0,num=0,count=0;    
 int code;
 boolean both_set = false;
 //constructor
@@ -75,16 +70,18 @@ Intro() throws IOException {
 		Vb2.setVisible(false);
 		label1 = new JLabel("Format Master Tracker");
 		label1.setBounds(190, 130, 500, 30);
+		label1.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
 		label2 = new JLabel("Format Candidate Referral");
 		label2.setBounds(190, 200, 500, 30);
+		label2.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
 		label3 = new JLabel("Perform VLookup");
 		label3.setBounds(190, 270, 500, 30);
+		label3.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
 		error = new JLabel("");
 		error.setBounds(400, 430, 350, 30);
 		ta = new JLabel("Member Referral Validation Automator",SwingConstants.CENTER);
 		ta.setBounds(200,0,600,100); 
 		ta.setFont(new Font("Courier New", Font.BOLD, 22));
-		ta.setBackground(new Color(122,38,165));
 		f.add(b);f.add(label1);f.add(ta);f.add(b1);f.add(b2);f.add(b3);f.add(ba);f.add(label2);f.add(label3);f.add(error);f.add(Vb1);f.add(Vb2);
 		f.add(submit);
 		f.setSize(1000,500);
@@ -101,6 +98,7 @@ Intro() throws IOException {
 	     });
 		b2.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
+	        error.setText("");
 	        ba.setVisible(true);
 	        b1.setEnabled(false);
 	        b3.setEnabled(false);}			
@@ -128,17 +126,11 @@ Intro() throws IOException {
 	        	  outputFile1 = selectfile();
 	        	 if(outputFile1==null){
 	        	 error.setText("Master Tracker File Not Choosed");
-	        /*	 Vb1.setVisible(false);
-	        	 Vb2.setVisible(false);
-	        	 b1.setEnabled(true);
-	        	 b2.setEnabled(true);
-	        	 b3.setEnabled(true);*/
+	        	 count+=1;
 	        	 return;
 	        	 }
-	        		// code=3;
-	        		 //submit.setVisible(true);
-	        		 //read_write(result);
-					 }
+	        	 	error.setText("Master Tracker File Selected");
+	        }
 	     });
 		Vb2.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
@@ -147,9 +139,10 @@ Intro() throws IOException {
 	        	  outputFile2 = selectfile();
 	        	 if(outputFile2==null){
 	        	 error.setText("Candidate Referral File Not Choosed");
-
+	        	 count+=1;
 	        	 return;
 	        	 }
+	        	 error.setText("Candidate Referral File Selected");
 	        	 if(outputFile1!=null&&outputFile2!=null){
 	        		   code=3;
 	        		 submit.setVisible(true);
@@ -209,6 +202,7 @@ Intro() throws IOException {
 	        		 submit.setVisible(false);
 	        		 b1.setEnabled(true);
 	        		 b3.setEnabled(true);
+	        		 ba.setVisible(false);
 	        		}catch(Exception code2){
 	        			error.setText("Invalid File Selected");
 	        			ba.setVisible(false);
@@ -269,7 +263,7 @@ public void read_write(String result) throws IOException{
 	CreationHelper createHelper = wbwrite.getCreationHelper();
 	
 	Sheet sheet_write = wbwrite.createSheet("Sheet1");
-	Sheet sheet_write2 = wbwrite.createSheet("Sheet2");
+	wbwrite.createSheet("Sheet2");
 	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	//to read Master tracker from the file selected by the user
@@ -289,6 +283,7 @@ public void read_write(String result) throws IOException{
     int counter2 = 7;	    
 	//font style to set font as bold
 	//code to iterate over the rows  
+    
 	for(int i=rowStart;i<=rowEnd;i++){
 	row=sheet.getRow(i);
 	if(row==null){
@@ -343,10 +338,6 @@ public void read_write(String result) throws IOException{
 		 //getting reference of current cell
 			 Cell currentCell = cell;
 			 sheet_write.autoSizeColumn(iCell);
-		 // testing for types of the cell
-			 DataFormatter dataFormatter = new DataFormatter();
-			// String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
-		   	// rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);	 
 			 if(i>=6 && iCell==5 ||i>=6 && iCell==6){
 				 try{
 				 CellStyle dateStyle = wbwrite.createCellStyle();
@@ -462,6 +453,6 @@ public void finish(){
 
 
 public static void main(String[] args) throws IOException{
-	Intro o = new Intro();
+new Intro();
 }
 }
