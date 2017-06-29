@@ -1,12 +1,9 @@
 package cgi;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -20,12 +17,12 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class SheetCopy {
 
@@ -34,10 +31,9 @@ SheetCopy(String output1,String output2) throws IOException{
 	
 	
 	
-	 Workbook wb = new HSSFWorkbook();  // or new XSSFWorkbook();
+	 Workbook wb = new XSSFWorkbook();  // or new XSSFWorkbook();
 	 Sheet sheet1 = wb.createSheet("Sheet1");
 	 Sheet sheet2 = wb.createSheet("Sheet2");
-	 int puu =  7;
      CellStyle style = wb.createCellStyle();
      Font font = wb.createFont();
      font.setFontHeightInPoints((short)11);
@@ -123,10 +119,9 @@ SheetCopy(String output1,String output2) throws IOException{
 					 Cell currentCell = cell;
 					 sheet1.autoSizeColumn(iCell);
 				 // testing for types of the cell
-					 DataFormatter dataFormatter = new DataFormatter();
-					// String cellStringValue = dataFormatter.formatCellValue(row.getCell(iCell));
-				   	// rowwrite[i].createCell(iCell+1).setCellValue(cellStringValue);	 
+				
 					 if(i>=6 && iCell==5 ||i>=6 && iCell==6){
+						 try{
 						 CellStyle dateStyle = wb.createCellStyle();
 			    		 dateStyle.setDataFormat(
 			    		 createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
@@ -138,8 +133,9 @@ SheetCopy(String output1,String output2) throws IOException{
 			   	         sheet1.setColumnWidth(21,1200*4);
 			   	         sheet1.setColumnWidth(22,1400*4);
 			   	         sheet1.setColumnWidth(23,1400*4);
-			   	         continue;}
-					 
+			   	         continue;
+			   	         }catch(Exception ex){}
+					 }
 					 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
 				//		 System.out.print(currentCell.getNumericCellValue() + "--");       
 		    			 if(i>=6&& iCell ==9){
@@ -157,7 +153,10 @@ SheetCopy(String output1,String output2) throws IOException{
 		    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
 		    					 }catch(Exception e){
 		    					 String newValue = value.replaceAll("\\s","");
-		        				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");}
+		    					 try{
+		        				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+		        				 }catch(Exception af){}
+		    					 }
 		    					 continue;}
 		                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getStringCellValue());}
 						 else if(currentCell.getCellTypeEnum() == CellType.FORMULA){
@@ -191,13 +190,7 @@ SheetCopy(String output1,String output2) throws IOException{
 						 
 						 rowwrite[5].createCell(21).setCellValue("Referred By Email");
 						 rowwrite[i].createCell(21).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,7,0)");
-					 
-						 rowwrite[5].createCell(22).setCellValue("Referred By");
-						 rowwrite[i].createCell(22).setCellFormula("IF(T"+count+"=0,U"+count+",T"+count+")");
-						 
-			         		
-						 rowwrite[5].createCell(23).setCellValue("Referred By Email");
-						 rowwrite[i].createCell(23).setCellFormula("IF(S"+count+"=0,V"+count+",S"+count+")");
+					
 						 count++;
 						 
 					}
@@ -275,12 +268,9 @@ SheetCopy(String output1,String output2) throws IOException{
 					 else{
 							//getting reference of current cell
 							 Cell currentCell = cell2;
-							 sheet2.autoSizeColumn(iCell);
-							 DataFormatter dataFormatter = new DataFormatter();
-							 String cellStringValue = dataFormatter.formatCellValue(row2.getCell(iCell));
-							 rowwrite2[i1].createCell(iCell+1).setCellValue(cellStringValue);
-							 
+							 sheet2.autoSizeColumn(iCell);			 
 							 if(i1>=6 && iCell==10||i1>=6 && iCell==12 ||i1>=6 && iCell==13||i1>=6 && iCell==14||i1>=6 && iCell==20 ){
+								 try{
 				    			 CellStyle dateStyle = wb.createCellStyle();
 				    		       dateStyle.setDataFormat(
 				    		           createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
@@ -288,7 +278,7 @@ SheetCopy(String output1,String output2) throws IOException{
 				   	            writeDate.setCellValue(row2.getCell(iCell).getDateCellValue());
 				   	            writeDate.setCellStyle(dateStyle); 
 				   	         sheet2.setColumnWidth(iCell,1100*4);
-				        continue;
+				        continue;}catch(Exception e){}
 							 }
 							 
 							 
@@ -327,7 +317,7 @@ SheetCopy(String output1,String output2) throws IOException{
 			            }
 			         	if(i1==5){
 			         		rowwrite2[i1]=sheet2.getRow((short)i1);;
-			         		 rowwrite2[i1].createCell(0).setCellValue("Validation Index");
+			         		rowwrite2[i1].createCell(0).setCellValue("Validation Index");
 			        	}
 						}		
 
@@ -373,19 +363,20 @@ SheetCopy(String output1,String output2) throws IOException{
 		 }
 	}*/
 	   	//sheet2.createRow(0).createCell(0).setCellValue("ID");
-		FileOutputStream fileOut = new FileOutputStream("VLookupFile.xls");
+		FileOutputStream fileOut = new FileOutputStream("VLookupOutput.xlsx");
 		 wb.write(fileOut);;
 		fileOut.close();
+		wb.close();wbread.close();fs.close();wbread2.close();fs2.close();
 		System.out.println("Finale WorkBook has been created"); 
-		File output = new File("VLookupFile.xls");
+		File output = new File("VLookupOutput.xlsx");
 		String path = output.getPath();
 		Runtime.getRuntime().exec("explorer.exe /select," + path);
 }
 			
 
 public static void main(String[] args) throws IOException{
-	String output1 = "Njoyn Master Tracker-16-18.xls";
-	String output2 ="Candidate Referrals (Generic).xls";
+	String output1 = "Requisition Applicants (28 June).xls";
+	String output2 ="Candidate Referrals (28 June).xls";
 	new SheetCopy(output1,output2);
 }
 }
