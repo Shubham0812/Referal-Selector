@@ -330,7 +330,6 @@ public void read_write(String result) throws IOException{
 			 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {       
     			 if(i>=6&& iCell ==9){
     				 double value = currentCell.getNumericCellValue();
-    				 //******************
     				 String axe =""+currentCell.getAddress();
     				 if(axe.length()==2){
     				 number_c = axe.substring(1,2);
@@ -359,17 +358,41 @@ public void read_write(String result) throws IOException{
     			 }
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());    
 				 }
+			 
 			 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
 		//		 System.out.print(currentCell.getStringCellValue() + "--");
     			 if(i>=6&& iCell ==9){
+    				 String add =""+currentCell.getAddress();
+    				 if(add.length()==2){number_c = add.substring(1,2);}
+    				 else if(add.length()==3){number_c = add.substring(1,3);}
+        		     else{number_c=add.substring(1,4);}
     				 String value = currentCell.getStringCellValue();
     				 try{
     					 String newValue = value.replaceAll("-","");
+    					 rowwrite[i] = sheet_write.getRow((short)i);
     					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+    					 CellReference cellReference = new CellReference("K"+number_c);
+        				 Row rowF = sheet_write.getRow(cellReference.getRow());
+        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+        	         		CellValue cellValue = evaluator.evaluate(cellF);
+        	         		System.out.println("  "+cellValue.getStringValue());
+        	               	Cell xcu =rowwrite[i].createCell(iCell+1);
+            	         	xcu.setCellStyle(num);
+            	         	xcu.setCellValue(Float.parseFloat(cellValue.getStringValue()));
+            	         	continue;
     					 }catch(Exception e){
     					 String newValue = value.replaceAll("\\s","");
     					 try{
-        				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+    						 rowwrite[i] = sheet_write.getRow((short)i);
+        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+        					 CellReference cellReference = new CellReference("K"+number_c);
+            				 Row rowF = sheet_write.getRow(cellReference.getRow());
+            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+            	         		CellValue cellValue = evaluator.evaluate(cellF);
+            	         		System.out.println("  "+cellValue.getStringValue());
+            	               	Cell xcu =rowwrite[i].createCell(iCell+1);
+                	         	xcu.setCellStyle(num);
+                	         	xcu.setCellValue(Float.parseFloat(cellValue.getStringValue()));
         				 }catch(Exception af){}
     					 }
     					 continue;}
