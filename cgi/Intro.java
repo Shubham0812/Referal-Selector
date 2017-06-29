@@ -1,5 +1,6 @@
 package cgi;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -15,6 +16,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -25,11 +27,11 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import java.awt.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Intro{
 JFrame f;
@@ -38,7 +40,7 @@ JButton b,ba,b1,b2,b3,submit,Vb1,Vb2;
 JProgressBar jb;    
 String result,result2;
 String outputFile1,outputFile2;
-int i=0,num=0,count=0;    
+int i=0,num=0,count=0,numbercounter = 7;    
 int code;
 boolean both_set = false;
 //constructor
@@ -261,13 +263,17 @@ public String selectfile(){
 //to read the Master tracker and apply the modifications to generate a new file
 public void read_write(String result) throws IOException{
 	//to write a new formatted Master Tracker
-	Workbook wbwrite = new HSSFWorkbook();
+	Workbook wbwrite = new XSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
 	
 	Sheet sheet_write = wbwrite.createSheet("Sheet1");
 	wbwrite.createSheet("Sheet2");
 	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
+	
+	CellStyle num = wbwrite.createCellStyle();
+		num.setDataFormat(HSSFDataFormat.getBuiltinFormat("0"));
+	
 	//to read Master tracker from the file selected by the user
 	try{
 	FileInputStream myStream = new FileInputStream(result);
@@ -283,6 +289,7 @@ public void read_write(String result) throws IOException{
 	System.out.println(rowStart + "  "+rowEnd);
     int counter1 = 7;
     int counter2 = 7;	    
+    String number_c;
 	//font style to set font as bold
 	//code to iterate over the rows  
     
@@ -296,45 +303,12 @@ public void read_write(String result) throws IOException{
 		rowwrite[i]=sheet_write.createRow((short)i);
 		//first and last cell for the row
 		 fCell = row.getFirstCellNum(); 
-         lCell = row.getLastCellNum();	System.out.println("First :  " + fCell + "Last : " + lCell);
+         lCell = row.getLastCellNum();	//System.out.println("First :  " + fCell + "Last : " + lCell);
          for(int iCell = fCell; iCell < lCell; iCell++) {
          cell = row.getCell(iCell);
 		 if(cell==null){
-			 if(iCell==9){
-				 Cell currentCells = row.getCell(iCell+3);
-				 if(currentCells==null){
-					 Cell currentCeller = row.getCell(iCell+4);
-					 if(currentCeller.getCellTypeEnum() == CellType.NUMERIC){
-						 double value = currentCeller.getNumericCellValue();
-						 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
-						 continue;}
-		    		     else if(currentCeller.getCellTypeEnum() == CellType.STRING){
-		    		    	 String value = currentCeller.getStringCellValue();
-	    					 try{
-	    						 String newValue = value.replaceAll("-","");
-	    						 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-	    						 continue;
-	    					 	}catch(Exception e){
-	    						 String newValue = value.replaceAll("\\s","");
-	        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");}
-	    					 	continue;}}
-    				   	 if(currentCells.getCellTypeEnum() == CellType.NUMERIC){
-    				   		 double value = currentCells.getNumericCellValue();
-    				  		 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
-    				  		 continue;}
-    				  	else if(currentCells.getCellTypeEnum() == CellType.STRING){
-    				  		String value = currentCells.getStringCellValue();
-    				  		try{
-    				  			String newValue = value.replaceAll("-","");
-    				  			rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    				  			continue;
-    				  			}catch(Exception e){
-    						 String newValue = value.replaceAll("\\s","");
-        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-        					 continue;
-    					 }}}}
-		 //if the cell has value determine the type of value.
-		 				
+			 continue;
+		 				}
 		 //if the cell has value determine the type of value.
 		 else{
 		 //getting reference of current cell
@@ -353,12 +327,36 @@ public void read_write(String result) throws IOException{
 				 }catch(Exception ex){}
 			 }
 			 
-			 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-		//		 System.out.print(currentCell.getNumericCellValue() + "--");       
+			 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {       
     			 if(i>=6&& iCell ==9){
     				 double value = currentCell.getNumericCellValue();
+    				 //******************
+    				 String axe =""+currentCell.getAddress();
+    				 if(axe.length()==2){
+    				 number_c = axe.substring(1,2);
+    				 }else if(axe.length()==3){
+    				 number_c = axe.substring(1,3);
+    				 }
+    				 else{
+    					 number_c=axe.substring(1,4);
+    				 }
+    				 System.out.println("hehe  " + axe + number_c);
+    				 rowwrite[i] = sheet_write.getRow((short)i);
     				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
-    				 continue;}
+    				 
+    				 CellReference cellReference = new CellReference("K"+number_c);
+    				 Row rowF = sheet_write.getRow(cellReference.getRow());
+    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+    	         		System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+    	         		CellValue cellValue = evaluator.evaluate(cellF);
+    	         		System.out.println("  "+cellValue.getStringValue());
+  
+    	         	Cell xcu =rowwrite[i].createCell(iCell+1);
+    	         	xcu.setCellStyle(num);
+    	         	xcu.setCellValue(Float.parseFloat(cellValue.getStringValue()));
+    				 continue;
+    				 
+    			 }
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());    
 				 }
 			 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
@@ -406,11 +404,11 @@ public void read_write(String result) throws IOException{
       System.out.println("WorkBook has been created");
       }//row ends
 	  String path = result.replaceAll(".xls","");
-	  FileOutputStream fileOut = new FileOutputStream(path+"(Output1).xls");
+	  FileOutputStream fileOut = new FileOutputStream(path+"(Output1).xlsx");
       wbwrite.write(fileOut);
       fileOut.close();
       
-      File look = new File(path+"(Output1).xls");
+      File look = new File(path+"(Output1).xlsx");
 	  String output = look.getPath();
       Runtime.getRuntime().exec("explorer.exe /select," + output);
 
@@ -424,7 +422,7 @@ public void read_write(String result) throws IOException{
 	  finish();
 	}catch(Exception e)
 	{
-		error.setText("Invalid File Selected");
+		error.setText(e+"Invalid File Selected");
 		submit.setVisible(false);
 		b.setVisible(false);
    	 	b2.setEnabled(true);
