@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -29,7 +30,7 @@ public class SheetCopy {
 	
 SheetCopy(String output1,String output2) throws IOException{
 	
-	
+
 	
 	 Workbook wb = new XSSFWorkbook();  // or new XSSFWorkbook();
 	 Sheet sheet1 = wb.createSheet("Sheet1");
@@ -40,7 +41,10 @@ SheetCopy(String output1,String output2) throws IOException{
      font.setFontName(HSSFFont.FONT_ARIAL);
      font.setBold(true);
      style.setFont(font); 
-	 
+     String number_c;
+     
+     CellStyle num = wb.createCellStyle();
+		num.setDataFormat(HSSFDataFormat.getBuiltinFormat("0"));
 	 FileInputStream myStream = new FileInputStream(output1);
 	 NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
 	 HSSFWorkbook wbread = new HSSFWorkbook(fs.getRoot(), true);
@@ -140,21 +144,68 @@ SheetCopy(String output1,String output2) throws IOException{
 				//		 System.out.print(currentCell.getNumericCellValue() + "--");       
 		    			 if(i>=6&& iCell ==9){
 		    				 double value = currentCell.getNumericCellValue();
+		    				 String axe =""+currentCell.getAddress();
+		    				 if(axe.length()==2){
+		    				 number_c = axe.substring(1,2);
+		    				 }else if(axe.length()==3){
+		    				 number_c = axe.substring(1,3);
+		    				 }
+		    				 else{
+		    					 number_c=axe.substring(1,4);
+		    				 }
+		    				 System.out.println("hehe  " + axe + number_c);
+		    				 rowwrite[i] = sheet1.getRow((short)i);
 		    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
-		    				 continue;}
+		    				 
+		    				 CellReference cellReference = new CellReference("K"+number_c);
+		    				 Row rowF = sheet1.getRow(cellReference.getRow());
+		    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+		    	         		System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+		    	         		CellValue cellValue = evaluator.evaluate(cellF);
+		    	         		System.out.println("  "+cellValue.getStringValue());
+		  
+		    	         	Cell xcu =rowwrite[i].createCell(iCell+1);
+		    	         	xcu.setCellStyle(num);
+		    	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+		    				 continue;
+		    				 
+		    			 }
 		                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());    
 						 }
 					 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
 				//		 System.out.print(currentCell.getStringCellValue() + "--");
 		    			 if(i>=6&& iCell ==9){
+		    				 String add =""+currentCell.getAddress();
+		    				 if(add.length()==2){number_c = add.substring(1,2);}
+		    				 else if(add.length()==3){number_c = add.substring(1,3);}
+		        		     else{number_c=add.substring(1,4);}
 		    				 String value = currentCell.getStringCellValue();
 		    				 try{
 		    					 String newValue = value.replaceAll("-","");
+		    					 rowwrite[i] = sheet1.getRow((short)i);
 		    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+		    					 CellReference cellReference = new CellReference("K"+number_c);
+		        				 Row rowF = sheet1.getRow(cellReference.getRow());
+		        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+		        	         		CellValue cellValue = evaluator.evaluate(cellF);
+		        	         		System.out.println("  "+cellValue.getStringValue());
+		        	               	Cell xcu =rowwrite[i].createCell(iCell+1);
+		            	         	xcu.setCellStyle(num);
+		            	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+		            	         	continue;
 		    					 }catch(Exception e){
 		    					 String newValue = value.replaceAll("\\s","");
 		    					 try{
-		        				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+		    						 rowwrite[i] = sheet1.getRow((short)i);
+		        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+		        					 CellReference cellReference = new CellReference("K"+number_c);
+		            				 Row rowF = sheet1.getRow(cellReference.getRow());
+		            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+		            	         		CellValue cellValue = evaluator.evaluate(cellF);
+		            	         		System.out.println("  "+cellValue.getStringValue());
+		            	               	Cell xcu =rowwrite[i].createCell(iCell+1);
+		                	         	xcu.setCellStyle(num);
+		                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
 		        				 }catch(Exception af){}
 		    					 }
 		    					 continue;}
@@ -328,41 +379,8 @@ SheetCopy(String output1,String output2) throws IOException{
 				co.setCellStyle(style);
 		      }}			            
 }
-	   
-	   
-	   
-	  /* for(int i=rowStart2;i<=rowEnd2;i++){
-			 row2=sheetx2.getRow(i);
-			 if(row2==null){
-		    		System.out.println("empty accessed");
-				continue;
-				}
-		 if(row2!=null){
-			 rowwrite2[i]=sheet2.createRow((short)i);;
-			 System.out.println("Last cell : " +row2.getLastCellNum());
-				 fCell2 = row2.getFirstCellNum(); 
-		     lCell2 = row2.getLastCellNum();
-		     
-		     for (int iCell = fCell2; iCell < lCell2; iCell++) {
-		    	 cell = row2.getCell(iCell);
-		    	 if(cell==null){
-		    		 continue; 
-		    	 }
-		    	 else{
-		    		 Cell currentCell = cell;
-		    		 	 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-		    		 		System.out.print(currentCell.getNumericCellValue() + "--");
-		    		 		rowwrite2[i].createCell(iCell).setCellValue(currentCell.getNumericCellValue());
-		    		 	}
-		    		 	else if(currentCell.getCellTypeEnum() == CellType.STRING){
-					  		String value = currentCell.getStringCellValue();
-					  		rowwrite2[i].createCell(iCell).setCellValue(currentCell.getRichStringCellValue());
-		    		 	}
-		    	 }
-		     }
-		 }
-	}*/
-	   	//sheet2.createRow(0).createCell(0).setCellValue("ID");
+	
+		
 		FileOutputStream fileOut = new FileOutputStream("VLookupOutput.xlsx");
 		 wb.write(fileOut);;
 		fileOut.close();
