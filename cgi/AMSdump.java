@@ -7,6 +7,7 @@ package cgi;
 import java.awt.List;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,8 +83,7 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 	 Row rowwrite[] =new Row[rowEnd+1];
 	
 //writing the contents of first file to AMS_DUMP_OUTPUT.XLSX";
-	 
-		DumpWrite(output2);
+	
 	 
 	 for(int i=rowStart;i<=rowEnd;i++){
 		 row=sheetx.getRow(i);
@@ -180,7 +180,8 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 
 //Writing to the file
 	 	FileOutputStream fileOut = new FileOutputStream("AmsDumpOutput"+open+".xlsx");
-	    wb.write(fileOut);
+	    wb.write(fileOut);; 
+	    
 		fileOut.close();
 	    wbread.close();
 		System.out.println("Sheet1 of WorkBook has been created");
@@ -198,12 +199,75 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 	morePasses = (LastRowNum/59805);
 	System.out.println("Passes Required are : "+(morePasses));
 	
-	for(int i = 0;i<20000;i++){
-		System.out.println("EMAIL : " +data.get(i).getEmail()+ "mobile : " +data.get(i).getMobile());
+//calling the function to read from second file and store them into list
+ 
+	storeIntoList(output2);
+	
+	//to check if the lists contains values 
+	for(int i = 0;i<data.size();i++){
+		System.out.println("Email : "+ data.get(i).getEmail() + "Pan : "+data.get(i).getPan());
 	}
-	System.out.println(data.get(1).getEmail());
+	
+	//writing to second sheet of the output file
+	int size = data.size();
+	Row rowwrite2[] =new Row[size+1];
+	rowwrite2[0] = sheet2.createRow(0);
+	rowwrite2[0].createCell(0).setCellValue("Mobile No.");
+	sheet2.setColumnWidth(0, 1300*3);
+	rowwrite2[0].createCell(1).setCellValue("Email ID");
+	rowwrite2[0].createCell(2).setCellValue("Candidate ID");
+	rowwrite2[0].createCell(3).setCellValue("PAN Number");
+	for(int counter = 1;counter<size;counter++){
+		rowwrite2[counter] = sheet2.createRow(counter);
+		rowwrite2[counter].createCell(0).setCellValue(data.get(counter).getMobile());
+		//rowwrite2[counter].createCell(1).setCellValue(data.get(counter).getEmail());
+		//rowwrite2[counter].createCell(2).setCellValue(data.get(counter).getID());
+		//rowwrite2[counter].createCell(3).setCellValue(data.get(counter).getPan());
+	}
+	FileOutputStream fileOuts = new FileOutputStream("AmsDumpOutput"+open+".xlsx");
+	wb.write(fileOuts);;wb.close();
+	fileOuts.close();
+	
+//closing the output workbook
+
+	System.out.println("Sheet 2 of Output WorkBook has been created");
+	wb = null;
+	myStream = null;
+	//field2(output2);
+	System.out.println("Finale done");
 
 }
+
+
+
+public void field2(String output2) throws IOException{
+	String excelFilePath = "AmsDumpOutput.xlsx";
+	try{
+		 FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
+		 Workbook workbook = WorkbookFactory.create(inputStream);
+		 Sheet sheet = workbook.getSheet("Sheet2");
+		 int rowCount = sheet.getLastRowNum();
+		 Row rowwrite2[] = new Row[rowCount];
+		  System.out.println(rowCount);
+			for(int counter = 1;counter<100000;counter++){
+				rowwrite2[counter] = sheet.createRow(counter);
+				rowwrite2[counter].createCell(0).setCellValue(data.get(counter).getMobile());
+				rowwrite2[counter].createCell(1).setCellValue(data.get(counter).getEmail());
+				rowwrite2[counter].createCell(2).setCellValue(data.get(counter).getID());
+				rowwrite2[counter].createCell(3).setCellValue(data.get(counter).getPan());
+			}
+			inputStream.close();
+	         FileOutputStream outputStream = new FileOutputStream("dexer.xlsx");
+	         workbook.write(outputStream);
+	         workbook.close();
+	         outputStream.close();
+	          
+	     } catch (IOException | EncryptedDocumentException
+	             | InvalidFormatException ex) {
+	         ex.printStackTrace();
+	     }
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //function to read the Second file and write to the Same output Workbook :- "AMS_DUMP_OUTPUT.XLSX"
@@ -239,7 +303,6 @@ public void DumpWrite(String output2) throws IOException{
     	for (Row r : sheet) {
     		
 //creating a new row in sheet2
-    		DataStorer obj = new DataStorer();
     		rowwrite[rows] = sheet2.createRow((int)rows);
     		for (Cell c : r) {
     			
@@ -248,12 +311,10 @@ public void DumpWrite(String output2) throws IOException{
 
     			if(c.getCellTypeEnum()==CellType.NUMERIC){
     				if(cols==0){
-    				obj.setMobile(c.getNumericCellValue());
     				rowwrite[rows].createCell(cols).setCellValue(c.getNumericCellValue());
     				cols++;count++;
     				continue;}
     				if(cols==2){
-    					obj.setID(c.getNumericCellValue());
     				rowwrite[rows].createCell(cols).setCellValue(c.getNumericCellValue());
     				cols++;count++;
     				continue;}
@@ -261,11 +322,9 @@ public void DumpWrite(String output2) throws IOException{
     			
 //if the content of the second input sheet is String write that String to the output workbook
     			if(cols==1){
-    				obj.setEmail(c.getStringCellValue());
     			rowwrite[rows].createCell(cols).setCellValue(c.getStringCellValue());
 	    		cols++;}
     			if(cols==3){
-    				obj.setPan(c.getStringCellValue());
         			rowwrite[rows].createCell(cols).setCellValue(c.getStringCellValue());
     	    		cols++;}
 	    		
@@ -290,7 +349,6 @@ public void DumpWrite(String output2) throws IOException{
 	    			return;	
 	    		}
     						}
-    		data.add(obj);
 	      rows++;perRow++;//iterating the row to next row
 	      
 	      cols=0;count=0;//setting the columns again to zero
@@ -298,6 +356,50 @@ public void DumpWrite(String output2) throws IOException{
 	      rowCounter++;
 	    				}
 	}
+}
+
+public void storeIntoList(String output2){
+	File is = new File(output2);
+	Workbook workbook = StreamingReader.builder()
+						.rowCacheSize(100)
+						.bufferSize(1096)
+						.open(is);
+	int cols = 0;int rows = 0;
+	  for (Sheet sheet : workbook){
+		  System.out.println(sheet.getSheetName() + " Rows :  "+sheet.getLastRowNum());
+	    	for (Row r : sheet) {
+	    		DataStorer obj = new DataStorer();
+	    		for (Cell c : r) {
+	    			System.out.println(c.getRowIndex());if(c.getCellTypeEnum()==CellType.NUMERIC){
+	    				if(cols==0){
+	        				obj.setMobile(c.getNumericCellValue());
+	        				cols++;
+	        				continue;}
+	        				if(cols==2){
+	        					obj.setID(c.getNumericCellValue());
+	        					cols++;
+	        				continue;}
+	        			}
+	        			
+	    //if the content of the second input sheet is String write that String to the output workbook
+	        			if(cols==1){
+	        				obj.setEmail(c.getStringCellValue());
+	    	    		cols++;}
+	        			if(cols==3){
+	        				obj.setPan(c.getStringCellValue());
+	        	    		cols++;}
+	    	    		
+
+
+	    		}
+	        		data.add(obj);
+	    	      rows++;;//iterating the row to next row
+	    	      
+	    	      cols=0;//setting the columns again to zero
+	    	    				}
+	    	}
+	  workbook = null;
+	  is = null;
 }
 
 public class DataStorer{
