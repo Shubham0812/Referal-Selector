@@ -80,7 +80,7 @@ Intro() throws IOException {
 		label3.setBounds(190, 270, 500, 30);
 		label3.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
 		error = new JLabel("");
-		error.setBounds(400, 430, 350, 30);
+		error.setBounds(400, 430, 750, 30);
 		ta = new JLabel("Member Referral Validation Automator",SwingConstants.CENTER);
 		ta.setBounds(200,0,600,80); 
 		ta.setFont(new Font("Courier New", Font.BOLD, 26));
@@ -268,7 +268,7 @@ public void read_write(String result) throws IOException{
 	
 	Sheet sheet_write = wbwrite.createSheet("Sheet1");
 	wbwrite.createSheet("Sheet2");
-	
+	wbwrite.createSheet("Sheet3");
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	
 	CellStyle num = wbwrite.createCellStyle();
@@ -348,11 +348,13 @@ public void read_write(String result) throws IOException{
     	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     	         		System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
     	         		CellValue cellValue = evaluator.evaluate(cellF);
-    	         		System.out.println("  "+cellValue.getStringValue());
   
     	         	Cell xcu =rowwrite[i].createCell(iCell+1);
     	         	xcu.setCellStyle(num);
-    	         	xcu.setCellValue(Float.parseFloat(cellValue.getStringValue()));
+    	         //	long final_result = Integer.parseInt(cellValue.getStringValue());
+    	    //     	System.out.println(final_result);
+	         		System.out.println("  "+cellValue.getStringValue());
+    	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
     				 continue;
     				 
     			 }
@@ -362,6 +364,87 @@ public void read_write(String result) throws IOException{
 			 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
 		//		 System.out.print(currentCell.getStringCellValue() + "--");
     			 if(i>=6&& iCell ==9){
+    				 
+    				 try{
+    					 Row are = sheet.getRow(i);
+    					 System.out.println("huh" + are.getCell(9).getStringCellValue()+"a");
+    					 if(are.getCell(9).getStringCellValue().equals(" ")){
+    						 {
+    							 try{
+    								 Cell currentCells = row.getCell(12);
+    								 if (currentCells.getCellTypeEnum() == CellType.NUMERIC) {
+    								 double value = currentCells.getNumericCellValue();
+    			    				 String axe =""+currentCells.getAddress();
+    			    				 if(axe.length()==2){
+    			    				 number_c = axe.substring(1,2);
+    			    				 }else if(axe.length()==3){
+    			    				 number_c = axe.substring(1,3);
+    			    				 }
+    			    				 else{
+    			    					 number_c=axe.substring(1,4);
+    			    				 }
+    			    				 rowwrite[i] = sheet_write.getRow((short)i);
+    			    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
+    			    				 
+    			    				 CellReference cellReference = new CellReference("K"+number_c);
+    			    				 Row rowF = sheet_write.getRow(cellReference.getRow());
+    			    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+    			    	         		System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+    			    	         		CellValue cellValue = evaluator.evaluate(cellF);
+    			  
+    			    	         	Cell xcu =rowwrite[i].createCell(iCell+1);
+    			    	         	xcu.setCellStyle(num);
+    			    	         //	long final_result = Integer.parseInt(cellValue.getStringValue());
+    			    	    //     	System.out.println(final_result);
+    				         		System.out.println("  "+cellValue.getStringValue());
+    			    	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+    			    				 continue;
+    								 }
+    								 else if (currentCells.getCellTypeEnum() == CellType.STRING) {
+    				    				 String add =""+currentCell.getAddress();
+    				    				 if(add.length()==2){number_c = add.substring(1,2);}
+    				    				 else if(add.length()==3){number_c = add.substring(1,3);}
+    				        		     else{number_c=add.substring(1,4);}
+    				    				 String value = currentCells.getStringCellValue();
+    				    				 try{
+    				    					 String newValue = value.replaceAll("-","");
+    				    					 rowwrite[i] = sheet_write.getRow((short)i);
+    				    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+    				    					 CellReference cellReference = new CellReference("K"+number_c);
+    				        				 Row rowF = sheet_write.getRow(cellReference.getRow());
+    				        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+    				        	         		CellValue cellValue = evaluator.evaluate(cellF);
+    				        	         		System.out.println("  "+cellValue.getStringValue());
+    				        	               	Cell xcu =rowwrite[i].createCell(iCell+1);
+    				            	         	xcu.setCellStyle(num);
+    				            	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+    				            	         	continue;
+    				    					 }catch(Exception e){
+    				    					 String newValue = value.replaceAll("\\s","");
+    				    					 try{
+    				    						 rowwrite[i] = sheet_write.getRow((short)i);
+    				        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
+    				        					 CellReference cellReference = new CellReference("K"+number_c);
+    				            				 Row rowF = sheet_write.getRow(cellReference.getRow());
+    				            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+    				            	         		CellValue cellValue = evaluator.evaluate(cellF);
+    				            	         		System.out.println("  "+cellValue.getStringValue());
+    				            	               	Cell xcu =rowwrite[i].createCell(iCell+1);
+    				                	         	xcu.setCellStyle(num);
+    				                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+    				        				 }catch(Exception af){}
+    				    					 }
+    				    					 continue;
+    								 }
+    								 
+    							 }catch(NullPointerException nula){} 
+    						 }
+    					 }
+    				 }catch(NullPointerException a){
+    					 System.out.println("I value = " + i + "haha");
+    				 }
+    				 
+    				 
     				 String add =""+currentCell.getAddress();
     				 if(add.length()==2){number_c = add.substring(1,2);}
     				 else if(add.length()==3){number_c = add.substring(1,3);}
@@ -378,7 +461,7 @@ public void read_write(String result) throws IOException{
         	         		System.out.println("  "+cellValue.getStringValue());
         	               	Cell xcu =rowwrite[i].createCell(iCell+1);
             	         	xcu.setCellStyle(num);
-            	         	xcu.setCellValue(Float.parseFloat(cellValue.getStringValue()));
+            	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
             	         	continue;
     					 }catch(Exception e){
     					 String newValue = value.replaceAll("\\s","");
@@ -392,7 +475,7 @@ public void read_write(String result) throws IOException{
             	         		System.out.println("  "+cellValue.getStringValue());
             	               	Cell xcu =rowwrite[i].createCell(iCell+1);
                 	         	xcu.setCellStyle(num);
-                	         	xcu.setCellValue(Float.parseFloat(cellValue.getStringValue()));
+                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
         				 }catch(Exception af){}
     					 }
     					 continue;}
