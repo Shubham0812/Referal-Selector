@@ -57,9 +57,9 @@ if (result == JFileChooser.APPROVE_OPTION) {
 
 public void modify(String result) throws IOException{
 	
-	int date1=0,date2=0,date3=0,date4=0,date5=0;
+	int date1x=0,date2x=0,date3=0,date4=0,date5=0;
 	int job = 0;String jobA = "";
-	int can = 0;String canA = "";
+	int canx = 0;String canxA = "";
 	Workbook wbwrite = new XSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
 	Sheet sheet_write = wbwrite.createSheet("new sheet");
@@ -84,50 +84,50 @@ public void modify(String result) throws IOException{
     int counter2 = 7;
     
     try{ 
-    	 List<String> headings = new ArrayList<String>();
+    	 List<String> heading = new ArrayList<String>();
     	 Row extra = sheet.getRow(5);
     	    for(int counter=0;counter<extra.getLastCellNum();counter++){
     	        Cell extraCell = extra.getCell(counter);
-    	        headings.add(extraCell.getStringCellValue());
+    	        heading.add(extraCell.getStringCellValue());
     	        }
-    	    for(int ca = 0;ca<headings.size();ca++){
+    	    for(int ca = 0;ca<heading.size();ca++){
     	    	
-    	    	if(headings.get(ca).toString().equals("Application Date")){
-    	    		date1=ca;
+    	    	if(heading.get(ca).toString().equals("Application Date")){
+    	    		date1x=ca;
     	    		System.out.println(ca);
     	    	}
-    	    	if(headings.get(ca).toString().equals("Date Survey Taken")){
-    	    		date2=ca;
+    	    	if(heading.get(ca).toString().equals("Date Survey Taken")){
+    	    		date2x=ca;
     	    		System.out.println(ca);
     	    	}
-    	    	if(headings.get(ca).toString().equals("Date Survey Invite Sent")){
+    	    	if(heading.get(ca).toString().equals("Date Survey Invite Sent")){
     	    		date3=ca;
     	    		System.out.println(ca);
     	    	}
-    	    	if(headings.get(ca).toString().equals("Candidate Enter Date")){
+    	    	if(heading.get(ca).toString().equals("Candidate Enter Date")){
     	    		date4=ca;
     	    		System.out.println(ca);
     	    	}
-    	    	if(headings.get(ca).toString().equals("Last Activity Date")){
+    	    	if(heading.get(ca).toString().equals("Last Activity Date")){
     	    		date5=ca;
     	    		System.out.println(ca);
     	    	}
-    	    	if(headings.get(ca).toString().equals("Job ID")){
+    	    	if(heading.get(ca).toString().equals("Job ID")){
     	    		job=ca;
     	    		jobA = Intro.checkAlphabet(job+1);
     	    		System.out.println(job+jobA);
     	    		
     	    	}
-    	    	if(headings.get(ca).toString().equals("CandidateID")){
-    	    		can=ca;
-    	    		canA = Intro.checkAlphabet(can+1);
-    	    		System.out.println(can+canA);
+    	    	if(heading.get(ca).toString().equals("CandidateID")){
+    	    		canx=ca;
+    	    		canxA = Intro.checkAlphabet(canx+1);
+    	    		System.out.println(canx+canxA);
     	    		
     	    	}
     	    		
     	    	
     	    }
-    	    System.out.println(headings.get(2).toString());
+    	    System.out.println(heading.get(2).toString());
     	    }catch(NullPointerException e){}
     
     
@@ -152,7 +152,7 @@ public void modify(String result) throws IOException{
 					 Cell currentCell = cell;
 					 sheet_write.autoSizeColumn(iCell);
 					 
-					 if(i>=6 && iCell==date1||i>=6 && iCell==date2 ||i>=6 && iCell==date3||i>=6 && iCell==date4||i>=6 && iCell==date5 ){
+					 if(i>=6 && iCell==date1x||i>=6 && iCell==date2x ||i>=6 && iCell==date3||i>=6 && iCell==date4||i>=6 && iCell==date5 ){
 						 try{
 		    			 CellStyle dateStyle = wbwrite.createCellStyle();
 		    		       dateStyle.setDataFormat(
@@ -187,7 +187,7 @@ public void modify(String result) throws IOException{
      	}//for ends
 	         	if(i>=6){
 	           	 rowwrite[i]=sheet_write.getRow((short)i);;
-	    		 rowwrite[i].createCell(0).setCellFormula("CONCATENATE("+jobA+counter1+","+canA+counter2+")");
+	    		 rowwrite[i].createCell(0).setCellFormula("CONCATENATE("+jobA+counter1+","+canxA+counter2+")");
 	    		 CellReference cellReference = new CellReference("A"+counter1);
 	    	 		Row rowF = sheet_write.getRow(cellReference.getRow());
 	    	 		Cell cellF = rowF.getCell(cellReference.getCol()); 
