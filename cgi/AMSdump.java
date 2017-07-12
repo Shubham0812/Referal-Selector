@@ -8,11 +8,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -28,7 +26,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -41,10 +38,10 @@ public class AMSdump {
 	java.util.List<DataStorer> data = new ArrayList<DataStorer>();
 	
 	 int check;
-	static String open = "";
-	static String output1;
-	static String output2;	    	  int check1,check2;
-	 static XSSFWorkbook wb = new XSSFWorkbook();
+	 String open = "";
+	 String output1;
+	 String output2;	    	  int check1,check2;
+	 XSSFWorkbook wb = new XSSFWorkbook();
 	 Sheet sheet1 = wb.createSheet("Sheet1");
 	 Sheet sheet2 =wb.createSheet("Sheet2");
 	 int LastRowNum;
@@ -55,7 +52,9 @@ public class AMSdump {
 AMSdump(String output1,String output2) throws IOException,InvalidFormatException{
 	
 //CellStyle to set the cell headers as bold
-	
+	int date1=0,date2=0;
+	int email = 0;String emailA ="";
+	int phone = 0;String phoneA = "";
 	 CellStyle style = wb.createCellStyle();
 	 Font font = wb.createFont();
      font.setFontHeightInPoints((short)11);
@@ -106,6 +105,38 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 	
 	 storeIntoList(output2);
 	 
+	 try{ 
+		    List<String> headings = new ArrayList<String>();
+		    Row extra = sheetx.getRow(5);
+		    for(int counter=0;counter<extra.getLastCellNum();counter++){
+		    Cell extraCell = extra.getCell(counter);
+		    headings.add(extraCell.getStringCellValue());
+		    }
+		    for(int ca = 0;ca<headings.size();ca++){
+		    	if(headings.get(ca).toString().equals("Applied Date (WEB)")){
+		    		date1=ca;
+		    		System.out.println(ca);
+		    	}
+		    	if(headings.get(ca).toString().equals("Applied Date (WEB/MCH)")){
+		    		date2=ca;
+		    		System.out.println(ca);
+		    	}
+		    	if(headings.get(ca).toString().equals("Candidate Phone Number")){
+		    		phone=ca;
+		    		phoneA = Intro.checkAlphabet(phone);
+		    		System.out.println(phone+phoneA);
+		    		
+		    	}
+		    	if(headings.get(ca).toString().equals("Candidate Email")){
+		    		email=ca;
+		    		emailA = Intro.checkAlphabet(email);
+		    		System.out.println(email+emailA);
+		    		
+		    	}
+		    }
+		    System.out.println(headings.get(2).toString());
+		    }catch(NullPointerException e){}
+	 
 	 for(int i=rowStart;i<=rowEnd;i++){
 		 row=sheetx.getRow(i);
 		 if(row==null){
@@ -139,7 +170,7 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 				 	
 //reading and writing dates require special data format
 				 	
-				 	if(i>=6 && iCell==6 ||i>=6 && iCell==7){
+				 	if(i>=6 && iCell==date1 ||i>=6 && iCell==date2){
 				 	try {
 				 			CellStyle dateStyle = wb.createCellStyle();
 				 			dateStyle.setDataFormat(
@@ -148,11 +179,6 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 			   	            writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
 			   	            writeDate.setCellStyle(dateStyle); 
 			   	            sheet1.setColumnWidth(iCell,1100*4);
-			   	            sheet1.setColumnWidth(20,1200*4);
-			   	            sheet1.setColumnWidth(21,1300*4);
-			   	            sheet1.setColumnWidth(22,1400*4);
-			   	            sheet1.setColumnWidth(23,1700*4);
-			   	            sheet1.setColumnWidth(24,1700*4);
 			   	            continue;
 			   	           }catch(Exception ex){}
 				 	
@@ -188,7 +214,7 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 
 			if(i>=6){
 				 rowwrite[5].createCell(22).setCellValue("Mobile Check");
-				 CellReference cellReference = new CellReference("K"+(i+1));
+				 CellReference cellReference = new CellReference(phoneA+(i+1));
 				 Row rowf = sheet1.getRow(cellReference.getRow());
 				 Cell cellf = rowf.getCell(cellReference.getCol());
 				 CellValue cellValue = evaluator.evaluate(cellf);
@@ -197,9 +223,14 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 				 double val = cellValue.getNumberValue();
 				 System.out.println(val);
 				 for(int counter = 1;counter<data.size();counter++){
+					  if(val==0){System.out.println("HOLA ");
+					  continue;}
 					 if(val == data.get(counter).getMobile()){
 						 rowwrite[i].createCell(22).setCellValue(val);
 						 rowwrite[i].createCell(25).setCellValue(data.get(counter).getSource());
+						 rowwrite[i].createCell(26).setCellValue(data.get(counter).getID());
+						 rowwrite[i].createCell(27).setCellValue(data.get(counter).getcurrentStage());
+						 rowwrite[i].createCell(28).setCellValue(data.get(counter).getcurrentStatus());
 					 }
 				 }
 				 
@@ -209,8 +240,12 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 			if(i>=6){
 				 rowwrite[5].createCell(23).setCellValue("Email Check");
 				 rowwrite[5].createCell(24).setCellValue("Duplicacy Check");
-				 rowwrite[5].createCell(25).setCellValue("Referral Check");
-				 CellReference cellReferences = new CellReference("E"+(i+1));
+				 rowwrite[5].createCell(25).setCellValue("Source");
+				 rowwrite[5].createCell(26).setCellValue("AMS ID");
+				 rowwrite[5].createCell(27).setCellValue("Current Stage");
+				 rowwrite[5].createCell(28).setCellValue("Current Status");
+			     rowwrite[5].createCell(29).setCellValue("Communication");
+				 CellReference cellReferences = new CellReference(emailA+(i+1));
 				 Row rowfs = sheet1.getRow(cellReferences.getRow());
 				 Cell cellfs = rowfs.getCell(cellReferences.getCol());
 				 CellValue cellValues = evaluator.evaluate(cellfs);
@@ -220,9 +255,11 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 				 System.out.println(vals);
 				 for(int counter2 = 1;counter2<data.size();counter2++){
 					 if(vals.equalsIgnoreCase(data.get(counter2).getEmail())){
-						 System.out.println("Success mofo");
 						 rowwrite[i].createCell(23).setCellValue(vals);
 						 rowwrite[i].createCell(25).setCellValue(data.get(counter2).getSource());
+						 rowwrite[i].createCell(26).setCellValue(data.get(counter2).getID());
+						 rowwrite[i].createCell(27).setCellValue(data.get(counter2).getcurrentStage());
+						 rowwrite[i].createCell(28).setCellValue(data.get(counter2).getcurrentStatus());
 					 }
 				 }
 				 
@@ -285,7 +322,7 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 	         
 
 }//outer for loop end
-	 for(int i=6;i<sheet1.getLastRowNum();i++){
+	 for(int i=6;i<sheet1.getLastRowNum()+1;i++){
 	     Row ttya = sheet1.getRow(i);
 	 
 	   try{
@@ -302,19 +339,25 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 
 
 	   }
+	 
+	 for(int pounter = 19;pounter<30;pounter++){
+		 if(pounter==22){
+         	sheet1.setColumnWidth(pounter,1200*4);
+         	continue;
+         }
+            sheet1.setColumnWidth(pounter,1700*4);
+	 }
+	 
 //Writing to the file
-	 	FileOutputStream fileOut = new FileOutputStream("AmsDumpOutput"+open+".xlsx");
+	 	FileOutputStream fileOut = new FileOutputStream("AmsDumpOutput.xlsx");
 	    wb.write(fileOut);; 
 	    
 		fileOut.close();
 	    wbread.close();
 		System.out.println("Sheet1 of WorkBook has been created");
-		System.out.println(data.get(81454).getSource() + data.get(81454).getPan() + data.get(81454).getID());
-		System.out.println(data.get(81463).getSource() + data.get(81463).getPan() + data.get(81463).getID());
-		File output = new File("AmsDumpOutput.xlsx");
-		String path = output.getPath();
-		Runtime.getRuntime().exec("explorer.exe /select," + path);
-	wb = null;
+		System.out.println(data.get(81454).getcurrentStage() + data.get(81454).getPan() + data.get(81454).getID());
+		System.out.println(data.get(81463).getcurrentStatus() + data.get(81463).getPan() + data.get(81463).getID());
+			wb = null;
 	myStream = null;
 
 }
@@ -329,9 +372,9 @@ public void storeIntoList(String output2){
 	  for (Sheet sheet : workbook){
 		  System.out.println(sheet.getSheetName() + " Rows :  "+sheet.getLastRowNum());
 	    	for (Row r : sheet) {
+    			System.out.println(r.getRowNum());
 	    		DataStorer obj = new DataStorer();
 	    		for (Cell c : r) {
-	    			System.out.println(c.getRowIndex());
 	    			if(c.getCellTypeEnum()==CellType.NUMERIC){
 	    				if(cols==0){
 	        				obj.setMobile(c.getNumericCellValue());
@@ -341,25 +384,33 @@ public void storeIntoList(String output2){
 	        					obj.setID(c.getNumericCellValue());
 	        					cols++;
 	        				continue;}
-	        			}
-	        			
+	        			}else{
 	    //if the content of the second input sheet is String write that String to the output workbook
 	        			if(cols==1){
 	        				obj.setEmail(c.getStringCellValue());
 	    	    		cols++;}
 	        			else if(cols==3){
 	        				obj.setPan(c.getStringCellValue());
-	        				cols++;
+	        				cols=4;
 	        				continue;
-	        				
 	        	    		}
-	        			else{
+	        			if(cols==4){
 	        				obj.setSource(c.getStringCellValue());
+	        				cols =5;
+	        				continue;
+	        			}
+	        			if(cols==5){
+	        				obj.setcurrentStage(c.getStringCellValue());
+	        				cols=6;
+	        				continue;
+	        			}
+	        			if(cols==6){
+	        				obj.setcurrentStatus(c.getStringCellValue());
 	        				cols++;
 	        				continue;
-	        			}	
+	        			}
 	    	    		
-
+	        			}
 
 	    		}
 	        		data.add(obj);
@@ -370,20 +421,22 @@ public void storeIntoList(String output2){
 	    	}
 	  workbook = null;
 	  is = null;
-	  String email,pan="Nil",source;
+	  String email,pan="Nil",source,stage,status;
 	  double mobile,ID;
 	  for(int counter = 0;counter<data.size();counter++){
 		  DataStorer obj = new DataStorer();
-		  if(data.get(counter).getSource()==null){
+		  if(data.get(counter).getcurrentStatus()==null){
 			  source = data.get(counter).getPan();
+			  stage = data.get(counter).getSource();
+			  status = data.get(counter).getcurrentStage();
 			  mobile = data.get(counter).getMobile();
 			  email = data.get(counter).getEmail();
 			  ID = data.get(counter).getID();
-			  obj.setMobile(mobile);
+			  obj.setMobile(mobile);obj.setcurrentStage(stage);obj.setcurrentStatus(status);
 			  obj.setEmail(email);obj.setID(ID);obj.setPan(pan);obj.setSource(source);
 			  data.set(counter,obj);
 		  }
-	  }
+	  }  
 }
 
 public class DataStorer{
@@ -391,7 +444,7 @@ public class DataStorer{
 	String email;
 	double ID;
 	String Pan;
-	String Source;
+	String Source,Stage,Status;
 	public void setMobile(double mobile){
 		this.mobile = mobile;
 	}
@@ -427,15 +480,24 @@ public class DataStorer{
 	public String getSource(){
 		return this.Source;
 	}
-
-
+	public void setcurrentStage(String stage){
+		this.Stage=stage;
 	}
-
+	public String getcurrentStage(){
+	return this.Stage;
+	}
+	public void setcurrentStatus(String status){
+		this.Status=status;
+	}
+	public String getcurrentStatus(){
+		return this.Status;
+	}
+}
 //main function to call the constructor
 
 	public static void main(String[] args) throws IOException,InvalidFormatException{
-		output1 = "VLookupOutputs.xlsx";	//first input file to be passed
-		output2 ="AMS_Dump_Data"+open+"x.xlsx";  //second input file to be passed
+		String output1 = "VLookupOutputs.xlsx";	//first input file to be passed
+		String output2 ="Ams_Dump.xlsx";  //second input file to be passed
 		new AMSdump(output1,output2); 		   //calling the constructor
 	}
 }
