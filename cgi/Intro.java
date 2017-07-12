@@ -1,12 +1,9 @@
 package cgi;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +22,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
@@ -86,7 +82,7 @@ Intro() throws IOException, InvalidFormatException {
 		b2x = new JButton("Select AMS Dump File: ");
 		b2x.setBounds(460, 270, 250,30);
 		b2x.setVisible(false);
-		b2x.setMnemonic(KeyEvent.VK_A);
+		b2x.setMnemonic(KeyEvent.VK_I);
 		b3 = new JButton("Module 1: ");
 		b3.setBounds(10, 130, 150, 30);
 		b3.setMnemonic(KeyEvent.VK_1);
@@ -158,7 +154,7 @@ Intro() throws IOException, InvalidFormatException {
 		progress = new JProgressBar(0);
 		progress.setBounds(0,350,1000,20);
 		progress.setValue(0);
-		progress.setStringPainted(true);
+		//progress.setStringPainted(true);
 		progress.setVisible(false); 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu optionsMenu = new JMenu("Options");
@@ -261,8 +257,8 @@ Intro() throws IOException, InvalidFormatException {
 	        	 
 	        	 return;
 	        	 }
-	        	 count3+=1;
-	        	 	if(count3==2){
+	        	 if(in2!=null&&in3!=null){
+	        	 
 	        	 		code = 6;
 	        	 		submit.setVisible(true);
 	        	 	}
@@ -281,8 +277,8 @@ Intro() throws IOException, InvalidFormatException {
 	        	 error.setText("Candidate Referrals File Not Chosen");
 	        	 return;
 	        	 }
-	        	 count3+=1;
-	        	 	if(count3==3){
+	        	 if(in1!=null&&in3!=null){
+		        	 
 	        	 		code = 6;
 	        	 		submit.setVisible(true);
 	        	 	}
@@ -301,8 +297,8 @@ Intro() throws IOException, InvalidFormatException {
 	        	 error.setText("AMS Dump File Not Chosen");
 	        	 return;
 	        	 }
-	        	 	count3+=1;
-	        	 	if(count3==3){
+	        	 if(in1!=null&&in2!=null){
+		        	 
 	        	 		code = 6;
 	        	 		submit.setVisible(true);
 	        	 	}
@@ -499,21 +495,8 @@ Intro() throws IOException, InvalidFormatException {
 	        				submit.setEnabled(false);
 	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(300);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-//	        							finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
+	        				 progress.setIndeterminate(true); 
+	        				 
 	        			}
 	        		};
 	        		Thread  t = new Thread(run);
@@ -524,8 +507,9 @@ Intro() throws IOException, InvalidFormatException {
 	        			  try{
 	        				  back.setVisible(false); 
 	      	        		read_write(result);			
-	      					
-	      					
+	      	        		error.setText("The Work has been Finished");
+	      	        		finish();
+	      					progress.setVisible(false);
 	        		  } catch (IOException e1) {}
 	        		  }  
 	        	  };
@@ -541,21 +525,8 @@ Intro() throws IOException, InvalidFormatException {
 	        				submit.setEnabled(false);
 	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(700);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        						//	finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
+	        				 progress.setIndeterminate(true); 
+	        				 
 	        			}
 	        		};
 	        		Thread  t = new Thread(run);
@@ -567,6 +538,9 @@ Intro() throws IOException, InvalidFormatException {
 	        				  back.setVisible(false); 
 	        				  candidate_referrals obj = new candidate_referrals();
 	        				  obj.modify(result2);
+	        				  error.setText("The Work has been Finished");
+		      	        		finish();
+		      					progress.setVisible(false);
 	      					
 	        		  } catch (IOException e1) {}
 	        		  }  
@@ -582,22 +556,10 @@ Intro() throws IOException, InvalidFormatException {
 	        				Vb1.setEnabled(false);
 	        				Vb2.setEnabled(false);
 	        				submit.setEnabled(false);
+	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(1100);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        							//finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
+	        				 progress.setIndeterminate(true); 
+	        				 
 	        			}
 	        		};
 	        		Thread  t = new Thread(run);
@@ -608,6 +570,9 @@ Intro() throws IOException, InvalidFormatException {
 	        			  try{
 	        				  back.setVisible(false); 
 	        				  new SheetCopy(outputFile1,outputFile2);	
+	        				  error.setText("The Work has been Finished");
+		      	        		finish();
+		      					progress.setVisible(false);
 	        				
 	      					
 	        		  } catch (IOException e1) {}
@@ -621,25 +586,13 @@ Intro() throws IOException, InvalidFormatException {
 	        		Runnable run = new Runnable(){
 	        			public void run() {
 	        				b4.setEnabled(false);
-	        				Vb4.setEnabled(false);
 	        				Vb3.setEnabled(false);
+	        				Vb4.setEnabled(false);
 	        				submit.setEnabled(false);
+	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(1300);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        				//			finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
+	        				 progress.setIndeterminate(true); 
+	        				 
 	        			}
 	        		};
 	        		Thread  t = new Thread(run);
@@ -649,7 +602,10 @@ Intro() throws IOException, InvalidFormatException {
 	        		  public void run(){
 	        			  try{
 	        				  back.setVisible(false); 
-	        				  new AMSdump(inputFile3,inputFile4); 
+	        				  new AMSdump(inputFile3,inputFile4);
+	        				  error.setText("The Work has been Finished");
+		      	        		finish();
+		      					progress.setVisible(false);
 	        				
 	      					
 	        		  } catch (IOException | InvalidFormatException e1) {}
@@ -663,25 +619,11 @@ Intro() throws IOException, InvalidFormatException {
 	        		Runnable run = new Runnable(){
 	        			public void run() {
 	        				b5.setEnabled(false);
-	        				Vb5.setEnabled(false);
-	        				
 	        				submit.setEnabled(false);
+	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(20);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        							//finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
+	        				 progress.setIndeterminate(true); 
+	        				 
 	        			}
 	        		};
 	        		Thread  t = new Thread(run);
@@ -692,6 +634,9 @@ Intro() throws IOException, InvalidFormatException {
 	        			  try{
 	        				  back.setVisible(false); 
 	        				  new Formatting(result);
+	        				  error.setText("The Work has been Finished");
+		      	        		finish();
+		      					progress.setVisible(false);
 	        				
 	      					
 	        		  } catch (IOException | InvalidFormatException e1) {}
@@ -704,28 +649,15 @@ Intro() throws IOException, InvalidFormatException {
 	        	
 				
 	    		if(code==6){
+	    			count=0;
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
-
 	        			public void run() {
-		        			b1.setEnabled(false);
-		        			b2.setEnabled(false);
-		        			b2x.setEnabled(false);
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(2940);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        							//finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
+	        				submit.setEnabled(false);
+	        				executeAll.setEnabled(false);
+	        				error.setText("Please Wait");
+	        				 progress.setIndeterminate(true); 
+	        				 
 	        			}
 	        		};
 	        		Thread  t = new Thread(run);
@@ -737,6 +669,9 @@ Intro() throws IOException, InvalidFormatException {
 	        				  back.setVisible(false); 
 	        				  error.setText("Please Wait While The Applicaiton is Working...");
 	  	    					checkExecutePress(in1,in2,in3);	 	
+	  	    					error.setText("The Work has been Finished");
+		      	        		finish();
+		      					progress.setVisible(false);
 	      					
 	        		  } catch (IOException | InvalidFormatException e1) {}
 	        		  }  
@@ -945,6 +880,9 @@ public void checkExecutePress(String Master,String Candidate,String AmsDump) thr
 	error.setText("Duplicacy Check along with ID, Source, Current Stage & Current Status Done");
 	new Formatting("AmsDumpOutput.xlsx");
 	//error.setText(" Communication Mails for different Sources, Stage & Status Done");
+	in1=null;
+	in2=null;
+	in3=null;
 }
 
 
@@ -998,7 +936,9 @@ public void read_write(String result) throws IOException{
     String number_c;
 	//font style to set font as bold
 	//code to iterate over the rows  
-    
+    Row extra = sheet.getRow(5);
+    Cell extraCell = extra.getCell(0);
+    ta.setText(extraCell.getStringCellValue());
 	for(int i=rowStart;i<=rowEnd;i++){
 	row=sheet.getRow(i);
 	if(row==null){
@@ -1042,17 +982,20 @@ public void read_write(String result) throws IOException{
     				 }else if(axe.length()==3){
     				 number_c = axe.substring(1,3);
     				 }
-    				 else{
+    				 else if(axe.length()==4){
     					 number_c=axe.substring(1,4);
     				 }
-    				 //System.out.println("hehe  " + axe + number_c);
+    				 else{
+    					 number_c=axe.substring(1,5);
+    				 }
+    				 System.out.println("hehe  " + axe + number_c);
     				 rowwrite[i] = sheet_write.getRow((short)i);
     				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
     				 
     				 CellReference cellReference = new CellReference("K"+number_c);
     				 Row rowF = sheet_write.getRow(cellReference.getRow());
     	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    	         		//System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+    	         		System.out.print(cellReference.getRow() + "  : " + cellReference.getCol());
     	         		CellValue cellValue = evaluator.evaluate(cellF);
   
     	         	Cell xcu =rowwrite[i].createCell(iCell+1);
@@ -1086,8 +1029,11 @@ public void read_write(String result) throws IOException{
     			    				 }else if(axe.length()==3){
     			    				 number_c = axe.substring(1,3);
     			    				 }
-    			    				 else{
+    			    				 else if(axe.length()==4){
     			    					 number_c=axe.substring(1,4);
+    			    				 }
+    			    				 else{
+    			    					 number_c=axe.substring(1,5);
     			    				 }
     			    				 rowwrite[i] = sheet_write.getRow((short)i);
     			    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
@@ -1110,7 +1056,12 @@ public void read_write(String result) throws IOException{
     				    				 String add =""+currentCell.getAddress();
     				    				 if(add.length()==2){number_c = add.substring(1,2);}
     				    				 else if(add.length()==3){number_c = add.substring(1,3);}
-    				        		     else{number_c=add.substring(1,4);}
+    				    				 else if(add.length()==4){
+    				    					 number_c=add.substring(1,4);
+    				    				 }
+    				    				 else{
+    				    					 number_c=add.substring(1,5);
+    				    				 }
     				    				 String value = currentCells.getStringCellValue();
     				    				 try{
     				    					 String newValue = value.replaceAll("-","");
@@ -1154,7 +1105,12 @@ public void read_write(String result) throws IOException{
     				 String add =""+currentCell.getAddress();
     				 if(add.length()==2){number_c = add.substring(1,2);}
     				 else if(add.length()==3){number_c = add.substring(1,3);}
-        		     else{number_c=add.substring(1,4);}
+    				 else if(add.length()==4){
+    					 number_c=add.substring(1,4);
+    				 }
+    				 else{
+    					 number_c=add.substring(1,5);
+    				 }
     				 String value = currentCell.getStringCellValue();
     				 try{
     					 String newValue = value.replaceAll("-","");
@@ -1244,6 +1200,7 @@ public void finish(){
 	b3.setEnabled(true);
 	b4.setEnabled(true);
 	b5.setEnabled(true);
+	submit.setEnabled(true);
 	submit.setVisible(false);
 	back.setVisible(false);
 	Vb1.setVisible(false);
