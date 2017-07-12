@@ -908,6 +908,10 @@ public String selectfile(){
 public void read_write(String result) throws IOException{
 
 	int date1=0,date2=0;
+	int phone = 0;String phoneA = "";
+	int req = 0;String reqA = "";
+	int can = 0;String canA = "";
+	int cellPhone = 0;String cellPhoneA = "";
 	//to write a new formatted Master Tracker
 	Workbook wbwrite = new XSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
@@ -958,6 +962,30 @@ public void read_write(String result) throws IOException{
     		date2=ca;
     		System.out.println(ca);
     	}
+    	if(headings.get(ca).toString().equals("Candidate Phone Number")){
+    		phone=ca;
+    		phoneA = checkAlphabet(phone+1);
+    		System.out.println(phone+phoneA);
+    		
+    	}
+    	if(headings.get(ca).toString().equals("Cell Phone")){
+    		cellPhone=ca;
+    		cellPhoneA = checkAlphabet(cellPhone+1);
+    		System.out.println(cellPhone+cellPhoneA);
+    		
+    	}
+    	if(headings.get(ca).toString().equals("REQ #")){
+    		req=ca;
+    		reqA = checkAlphabet(req+1);
+    		System.out.println(req+reqA);
+    		
+    	}
+    	if(headings.get(ca).toString().equals("Candidate ID")){
+    		can=ca;
+    		canA = checkAlphabet(can+1);
+    		System.out.println(can+canA);
+    		
+    	}
     }
     System.out.println(headings.get(2).toString());
     }catch(NullPointerException e){}
@@ -996,7 +1024,7 @@ public void read_write(String result) throws IOException{
 			 }
 			 
 			 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {       
-    			 if(i>=6&& iCell ==9){
+    			 if(i>=6&& iCell ==phone){
     				 double value = currentCell.getNumericCellValue();
     				 String axe =""+currentCell.getAddress();
     				 if(axe.length()==2){
@@ -1012,9 +1040,9 @@ public void read_write(String result) throws IOException{
     				 }
     				 //System.out.println("hehe  " + axe + number_c);
     				 rowwrite[i] = sheet_write.getRow((short)i);
-    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
+    				 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+value+",10)");
     				 
-    				 CellReference cellReference = new CellReference("K"+number_c);
+    				 CellReference cellReference = new CellReference(phoneA+number_c);
     				 Row rowF = sheet_write.getRow(cellReference.getRow());
     	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     	         		//System.out.print(cellReference.getRow() + "  : " + cellReference.getCol());
@@ -1034,15 +1062,15 @@ public void read_write(String result) throws IOException{
 			 
 			 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
 		//		 ////System.out.print(currentCell.getStringCellValue() + "--");
-    			 if(i>=6&& iCell ==9){
+    			 if(i>=6&& iCell ==phone){
     				 
     				 try{
     					 Row are = sheet.getRow(i);
-    					 ////System.out.println("huh" + are.getCell(9).getStringCellValue()+"a");
-    					 if(are.getCell(9).getStringCellValue().equals(" ")){
+    					 ////System.out.println("huh" + are.getCell(phone).getStringCellValue()+"a");
+    					 if(are.getCell(phone).getStringCellValue().equals(" ")){
     						 {
     							 try{
-    								 Cell currentCells = row.getCell(12);
+    								 Cell currentCells = row.getCell(cellPhone);
     								 if (currentCells.getCellTypeEnum() == CellType.NUMERIC) {
     								 double value = currentCells.getNumericCellValue();
     			    				 String axe =""+currentCells.getAddress();
@@ -1058,9 +1086,9 @@ public void read_write(String result) throws IOException{
     			    					 number_c=axe.substring(1,5);
     			    				 }
     			    				 rowwrite[i] = sheet_write.getRow((short)i);
-    			    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
+    			    				 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+value+",10)");
     			    				 
-    			    				 CellReference cellReference = new CellReference("K"+number_c);
+    			    				 CellReference cellReference = new CellReference(phoneA+number_c);
     			    				 Row rowF = sheet_write.getRow(cellReference.getRow());
     			    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     			    	         		////System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
@@ -1088,8 +1116,8 @@ public void read_write(String result) throws IOException{
     				    				 try{
     				    					 String newValue = value.replaceAll("-","");
     				    					 rowwrite[i] = sheet_write.getRow((short)i);
-    				    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    				    					 CellReference cellReference = new CellReference("K"+number_c);
+    				    					 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+    				    					 CellReference cellReference = new CellReference(phoneA+number_c);
     				        				 Row rowF = sheet_write.getRow(cellReference.getRow());
     				        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     				        	         		CellValue cellValue = evaluator.evaluate(cellF);
@@ -1102,8 +1130,8 @@ public void read_write(String result) throws IOException{
     				    					 String newValue = value.replaceAll("\\s","");
     				    					 try{
     				    						 rowwrite[i] = sheet_write.getRow((short)i);
-    				        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    				        					 CellReference cellReference = new CellReference("K"+number_c);
+    				        					 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+    				        					 CellReference cellReference = new CellReference(phoneA+number_c);
     				            				 Row rowF = sheet_write.getRow(cellReference.getRow());
     				            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     				            	         		CellValue cellValue = evaluator.evaluate(cellF);
@@ -1137,8 +1165,8 @@ public void read_write(String result) throws IOException{
     				 try{
     					 String newValue = value.replaceAll("-","");
     					 rowwrite[i] = sheet_write.getRow((short)i);
-    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    					 CellReference cellReference = new CellReference("K"+number_c);
+    					 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+    					 CellReference cellReference = new CellReference(phoneA+number_c);
         				 Row rowF = sheet_write.getRow(cellReference.getRow());
         	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
         	         		CellValue cellValue = evaluator.evaluate(cellF);
@@ -1151,8 +1179,8 @@ public void read_write(String result) throws IOException{
     					 String newValue = value.replaceAll("\\s","");
     					 try{
     						 rowwrite[i] = sheet_write.getRow((short)i);
-        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-        					 CellReference cellReference = new CellReference("K"+number_c);
+        					 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+        					 CellReference cellReference = new CellReference(phoneA+number_c);
             				 Row rowF = sheet_write.getRow(cellReference.getRow());
             	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
             	         		CellValue cellValue = evaluator.evaluate(cellF);
@@ -1176,7 +1204,7 @@ public void read_write(String result) throws IOException{
          //Validation Index Calculation
          	if(i>=6){
          		rowwrite[i]=sheet_write.getRow((short)i);;
-         		rowwrite[i].createCell(0).setCellFormula("CONCATENATE(F"+counter1+",D"+counter2+")");
+         		rowwrite[i].createCell(0).setCellFormula("CONCATENATE("+reqA+counter1+","+canA+counter2+")");
          		
          		CellReference cellReference = new CellReference("A"+counter1);
          		Row rowF = sheet_write.getRow(cellReference.getRow());
