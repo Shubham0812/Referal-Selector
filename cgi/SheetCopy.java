@@ -39,7 +39,7 @@ SheetCopy(String output1,String output2) throws IOException{
 	int date1x=0,date2x=0,date3=0,date4=0,date5=0;
 	int job = 0;String jobA = "";
 	int canx = 0;String canxA = "";
-	
+	int ref = 0; int ref2 = 0;	
 	 Workbook wb = new XSSFWorkbook();  // or new XSSFWorkbook();
 	 Sheet sheet1 = wb.createSheet("Sheet1");
 	 Sheet sheet2 = wb.createSheet("Sheet2");
@@ -122,6 +122,28 @@ SheetCopy(String output1,String output2) throws IOException{
 		    }
 		    System.out.println(headings.get(2).toString());
 		    }catch(NullPointerException e){}
+	   
+		try{ 
+	    	 List<String> headinge = new ArrayList<String>();
+	    	 Row extra = sheetx2.getRow(5);
+	    	    for(int counter=0;counter<extra.getLastCellNum();counter++){
+	    	        Cell extraCell = extra.getCell(counter);
+	    	        headinge.add(extraCell.getStringCellValue());
+	    	        }
+	    	    for(int ca = 0;ca<headinge.size();ca++){
+	    	    	
+	    	    	if(headinge.get(ca).toString().equals("Referral Name")){
+	    	    		ref=ca+2;
+	    	    		System.out.println(ref);
+	    	    	}
+	    	    	if(headinge.get(ca).toString().equals("Referral Email")){
+	    	    		ref2=ca+2;
+	    	    		System.out.println(ref2);
+	    	    	}	
+	    	    	
+	    	    }
+	    	    System.out.println(headinge.get(2).toString());
+	    	    }catch(NullPointerException e){}	   
 	   
 	   
 		for(int i=rowStart;i<=rowEnd;i++){
@@ -355,11 +377,11 @@ SheetCopy(String output1,String output2) throws IOException{
 
 					if(i>=6){
 						 rowwrite[5].createCell(20).setCellValue("Referred By");
-						 rowwrite[i].createCell(20).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,6,0)");				
+						 rowwrite[i].createCell(20).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,"+ref+",0)");				
 						 
 						 
 						 rowwrite[5].createCell(21).setCellValue("Referred By Email");
-						 rowwrite[i].createCell(21).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,7,0)");
+						 rowwrite[i].createCell(21).setCellFormula("VLOOKUP(A"+count+",Sheet2!1:65536,"+ref2+",0)");
 					
 						 count++;
 						 
