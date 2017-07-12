@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -849,7 +851,7 @@ public void helpAMSController(){
         	 }
         	 else{
         		 toCheckAMS="";
-        		 System.out.println(res);
+        		 //System.out.println(res);
         		 d2.dispose();
         		 new helpAms();
         	 }
@@ -905,7 +907,7 @@ public String selectfile(){
 //to read the Master tracker and apply the modifications to generate a new file
 public void read_write(String result) throws IOException{
 
-	
+	int date1=0,date2=0;
 	//to write a new formatted Master Tracker
 	Workbook wbwrite = new XSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
@@ -930,26 +932,46 @@ public void read_write(String result) throws IOException{
 	int rowStart = sheet.getFirstRowNum();
 	int rowEnd =   sheet.getLastRowNum();
 	Row rowwrite[] =new Row[rowEnd+1];
-	System.out.println(rowStart + "  "+rowEnd);
+	//System.out.println(rowStart + "  "+rowEnd);
     int counter1 = 7;
     int counter2 = 7;	    
     String number_c;
 	//font style to set font as bold
-	//code to iterate over the rows  
+	//code to iterate over the rows
+    try{ 
+    List<String> headings = new ArrayList<String>();
     Row extra = sheet.getRow(5);
-    Cell extraCell = extra.getCell(0);
-    ta.setText(extraCell.getStringCellValue());
+    for(int counter=0;counter<extra.getLastCellNum();counter++){
+    Cell extraCell = extra.getCell(counter);
+    headings.add(extraCell.getStringCellValue());
+    }
+    for(int ca = 0;ca<headings.size();ca++){
+    	
+    	if(headings.get(ca).toString().equals("Candidate ID")){
+    		System.out.println(ca);
+    	}
+    	if(headings.get(ca).toString().equals("Applied Date (WEB)")){
+    		date1=ca;
+    		System.out.println(ca);
+    	}
+    	if(headings.get(ca).toString().equals("Applied Date (WEB/MCH)")){
+    		date2=ca;
+    		System.out.println(ca);
+    	}
+    }
+    System.out.println(headings.get(2).toString());
+    }catch(NullPointerException e){}
 	for(int i=rowStart;i<=rowEnd;i++){
 	row=sheet.getRow(i);
 	if(row==null){
-		//System.out.println("empty accessed");
+		////System.out.println("empty accessed");
 		continue;
 	}
 	if(row!=null){
 		rowwrite[i]=sheet_write.createRow((short)i);
 		//first and last cell for the row
 		 fCell = row.getFirstCellNum(); 
-         lCell = row.getLastCellNum();	////System.out.println("First :  " + fCell + "Last : " + lCell);
+         lCell = row.getLastCellNum();	//////System.out.println("First :  " + fCell + "Last : " + lCell);
          for(int iCell = fCell; iCell < lCell; iCell++) {
          cell = row.getCell(iCell);
 		 if(cell==null){
@@ -960,7 +982,7 @@ public void read_write(String result) throws IOException{
 		 //getting reference of current cell
 			 Cell currentCell = cell;
 			 sheet_write.autoSizeColumn(iCell);
-			 if(i>=6 && iCell==5 ||i>=6 && iCell==6){
+			 if(i>=6 && iCell==date1 ||i>=6 && iCell==date2){
 				 try{
 				 CellStyle dateStyle = wbwrite.createCellStyle();
 	    		 dateStyle.setDataFormat(
@@ -988,21 +1010,21 @@ public void read_write(String result) throws IOException{
     				 else{
     					 number_c=axe.substring(1,5);
     				 }
-    				 System.out.println("hehe  " + axe + number_c);
+    				 //System.out.println("hehe  " + axe + number_c);
     				 rowwrite[i] = sheet_write.getRow((short)i);
     				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
     				 
     				 CellReference cellReference = new CellReference("K"+number_c);
     				 Row rowF = sheet_write.getRow(cellReference.getRow());
     	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    	         		System.out.print(cellReference.getRow() + "  : " + cellReference.getCol());
+    	         		//System.out.print(cellReference.getRow() + "  : " + cellReference.getCol());
     	         		CellValue cellValue = evaluator.evaluate(cellF);
   
     	         	Cell xcu =rowwrite[i].createCell(iCell+1);
     	         	xcu.setCellStyle(num);
     	         //	long final_result = Integer.parseInt(cellValue.getStringValue());
-    	    //     	//System.out.println(final_result);
-	         		//System.out.println("  "+cellValue.getStringValue());
+    	    //     	////System.out.println(final_result);
+	         		////System.out.println("  "+cellValue.getStringValue());
     	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
     				 continue;
     				 
@@ -1011,12 +1033,12 @@ public void read_write(String result) throws IOException{
 				 }
 			 
 			 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
-		//		 //System.out.print(currentCell.getStringCellValue() + "--");
+		//		 ////System.out.print(currentCell.getStringCellValue() + "--");
     			 if(i>=6&& iCell ==9){
     				 
     				 try{
     					 Row are = sheet.getRow(i);
-    					 //System.out.println("huh" + are.getCell(9).getStringCellValue()+"a");
+    					 ////System.out.println("huh" + are.getCell(9).getStringCellValue()+"a");
     					 if(are.getCell(9).getStringCellValue().equals(" ")){
     						 {
     							 try{
@@ -1041,14 +1063,14 @@ public void read_write(String result) throws IOException{
     			    				 CellReference cellReference = new CellReference("K"+number_c);
     			    				 Row rowF = sheet_write.getRow(cellReference.getRow());
     			    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    			    	         		//System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+    			    	         		////System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
     			    	         		CellValue cellValue = evaluator.evaluate(cellF);
     			  
     			    	         	Cell xcu =rowwrite[i].createCell(iCell+1);
     			    	         	xcu.setCellStyle(num);
     			    	         //	long final_result = Integer.parseInt(cellValue.getStringValue());
-    			    	    //     	//System.out.println(final_result);
-    				         		//System.out.println("  "+cellValue.getStringValue());
+    			    	    //     	////System.out.println(final_result);
+    				         		////System.out.println("  "+cellValue.getStringValue());
     			    	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
     			    				 continue;
     								 }
@@ -1071,7 +1093,7 @@ public void read_write(String result) throws IOException{
     				        				 Row rowF = sheet_write.getRow(cellReference.getRow());
     				        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     				        	         		CellValue cellValue = evaluator.evaluate(cellF);
-    				        	         		//System.out.println("  "+cellValue.getStringValue());
+    				        	         		////System.out.println("  "+cellValue.getStringValue());
     				        	               	Cell xcu =rowwrite[i].createCell(iCell+1);
     				            	         	xcu.setCellStyle(num);
     				            	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
@@ -1085,7 +1107,7 @@ public void read_write(String result) throws IOException{
     				            				 Row rowF = sheet_write.getRow(cellReference.getRow());
     				            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
     				            	         		CellValue cellValue = evaluator.evaluate(cellF);
-    				            	         		//System.out.println("  "+cellValue.getStringValue());
+    				            	         		////System.out.println("  "+cellValue.getStringValue());
     				            	               	Cell xcu =rowwrite[i].createCell(iCell+1);
     				                	         	xcu.setCellStyle(num);
     				                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
@@ -1098,7 +1120,7 @@ public void read_write(String result) throws IOException{
     						 }
     					 }
     				 }catch(NullPointerException a){
-    					 //System.out.println("I value = " + i + "haha");
+    					 ////System.out.println("I value = " + i + "haha");
     				 }
     				 
     				 
@@ -1120,7 +1142,7 @@ public void read_write(String result) throws IOException{
         				 Row rowF = sheet_write.getRow(cellReference.getRow());
         	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
         	         		CellValue cellValue = evaluator.evaluate(cellF);
-        	         		//System.out.println("  "+cellValue.getStringValue());
+        	         		////System.out.println("  "+cellValue.getStringValue());
         	               	Cell xcu =rowwrite[i].createCell(iCell+1);
             	         	xcu.setCellStyle(num);
             	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
@@ -1134,7 +1156,7 @@ public void read_write(String result) throws IOException{
             				 Row rowF = sheet_write.getRow(cellReference.getRow());
             	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
             	         		CellValue cellValue = evaluator.evaluate(cellF);
-            	         		//System.out.println("  "+cellValue.getStringValue());
+            	         		////System.out.println("  "+cellValue.getStringValue());
             	               	Cell xcu =rowwrite[i].createCell(iCell+1);
                 	         	xcu.setCellStyle(num);
                 	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
@@ -1143,10 +1165,10 @@ public void read_write(String result) throws IOException{
     					 continue;}
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getStringCellValue());}
 				 else if(currentCell.getCellTypeEnum() == CellType.FORMULA){
-					 System.out.print(currentCell.getStringCellValue() + "--");
+					 //System.out.print(currentCell.getStringCellValue() + "--");
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getCellFormula());}
 				 else if (currentCell.getCellTypeEnum() == CellType.ERROR){
-                  System.out.print(currentCell.getStringCellValue() + "--");
+                  //System.out.print(currentCell.getStringCellValue() + "--");
                      rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());}
 			 
 			 }}//cell for loop ends
@@ -1159,17 +1181,17 @@ public void read_write(String result) throws IOException{
          		CellReference cellReference = new CellReference("A"+counter1);
          		Row rowF = sheet_write.getRow(cellReference.getRow());
          		Cell cellF = rowF.getCell(cellReference.getCol()); 
-         		//System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+         		////System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
          		CellValue cellValue = evaluator.evaluate(cellF);
-         		//System.out.println("  "+cellValue.getStringValue());
+         		////System.out.println("  "+cellValue.getStringValue());
          		rowwrite[i].createCell(0).setCellValue(cellValue.getStringValue());
          		counter1+=1;counter2+=1;}
          	if(i==5){
          		rowwrite[i]=sheet_write.getRow((short)i);;
          		rowwrite[i].createCell(0).setCellValue("Validation Index");}}//row not null ends
 	
-	 System.out.println(result);
-      System.out.println("WorkBook has been created");
+	 //System.out.println(result);
+      //System.out.println("WorkBook has been created");
       }//row ends
 	  String path = result.replaceAll(".xls","");
 	  FileOutputStream fileOut = new FileOutputStream(path+"(Output1).xlsx");
@@ -1217,7 +1239,18 @@ public void finish(){
 }
 
 
-
+public String checkAlphabet(int no){
+	if(no==0){return "A";}if(no==1){return "B";}if(no==2){return "C";}
+	if(no==3){return "D";}if(no==4){return "E";}if(no==5){return "F";}
+	if(no==6){return "G";}if(no==7){return "H";}if(no==8){return "I";}
+	if(no==9){return "J";}if(no==10){return "K";}if(no==11){return "L";}
+	if(no==12){return "M";}if(no==13){return "N";}if(no==14){return "O";}
+	if(no==15){return "P";}if(no==16){return "Q";}if(no==17){return "R";}
+	if(no==18){return "S";}if(no==19){return "T";}if(no==20){return "U";}
+	if(no==21){return "V";}if(no==22){return "W";}if(no==23){return "X";}
+	if(no==24){return "Y";}
+	return "Z";
+}
 public static void main(String[] args) throws IOException, InvalidFormatException{
 new Intro();
 }
