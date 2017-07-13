@@ -52,7 +52,6 @@ JLabel ta,label1,label2,label3,label4,label5,error;
 JButton b,ba,b1,b2,b2x,b3,b6,submit,Vb1,Vb2,b4,b5,Vb3,Vb4,Vb5,back,executeAll;
 JProgressBar jb;
 JProgressBar progress;
-private static JDialog d,d1,d2;
 String result,result2;
 String outputFile1,outputFile2,inputFile3,inputFile4;
 String in1,in2,in3;
@@ -60,7 +59,7 @@ String toCheckMaster,toCheckCandidate,toCheckAMS;
 int i=0,num=0,count=0,count2=0,numbercounter = 7,count3 =0;    
 int code,cou = 0;
 //constructor
-Intro() throws IOException, InvalidFormatException {
+public void Intros() throws IOException, InvalidFormatException {
 
 		JFrame.setDefaultLookAndFeelDecorated(true);	
 		f = new JFrame("Master Referral Validation Automator");
@@ -178,11 +177,11 @@ Intro() throws IOException, InvalidFormatException {
 		helpHowTo.setMnemonic(KeyEvent.VK_H);
 		helpMenu.add(helpHowTo);
 		
-		JMenuItem helpMT = new JMenuItem("Check Master Tracker Format");
+		JMenuItem helpMT = new JMenuItem("Check Master Tracker Fields");
 		helpMT.setMnemonic(KeyEvent.VK_M);
 		helpMenu.add(helpMT);
 		
-		JMenuItem helpCR = new JMenuItem("Check Candidate Referral Format");
+		JMenuItem helpCR = new JMenuItem("Check Candidate Referral Fields");
 		helpCR.setMnemonic(KeyEvent.VK_C);
 		helpMenu.add(helpCR);
 		
@@ -223,7 +222,7 @@ Intro() throws IOException, InvalidFormatException {
 	     });
 		helpMT.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        	helpMasterController();}			
+	        	new Intro().helpMasterController();}			
 	     });
 		
 		helpCR.addActionListener(new ActionListener() {
@@ -390,6 +389,10 @@ Intro() throws IOException, InvalidFormatException {
 	        	 return;
 	        	 }
 	        	 	error.setText("Master Tracker File Selected");
+	           	 if(outputFile2!=null){
+	        		   code=3;
+	        		 submit.setVisible(true);
+	        	        	 }
 	        }
 	     });
 		Vb2.addActionListener(new ActionListener() {
@@ -403,7 +406,7 @@ Intro() throws IOException, InvalidFormatException {
 	        	 return;
 	        	 }
 	        	 error.setText("Candidate Referral File Selected");
-	        	 if(outputFile1!=null&&outputFile2!=null){
+	        	 if(outputFile1!=null){
 	        		   code=3;
 	        		 submit.setVisible(true);
 	        	        	 }
@@ -420,6 +423,10 @@ Intro() throws IOException, InvalidFormatException {
 	        	 return;
 	        	 }
 	        	 	error.setText("MR Output File Selected");
+		        	 if(inputFile4!=null){
+		        		   code=4;
+		        		 submit.setVisible(true);
+		        	        	 }
 	        }
 	     });
 		Vb4.addActionListener(new ActionListener() {
@@ -433,7 +440,7 @@ Intro() throws IOException, InvalidFormatException {
 	        	 return;
 	        	 }
 	        	 error.setText("AMS Dump File Selected");
-	        	 if(inputFile3!=null&&inputFile4!=null){
+	        	 if(inputFile3!=null){
 	        		   code=4;
 	        		 submit.setVisible(true);
 	        	        	 }
@@ -561,6 +568,7 @@ Intro() throws IOException, InvalidFormatException {
 	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
 	        				 progress.setIndeterminate(true); 
+	        				
 	        				 
 	        			}
 	        		};
@@ -572,6 +580,7 @@ Intro() throws IOException, InvalidFormatException {
 	        			  try{
 	        				  back.setVisible(false); 
 	        				  new SheetCopy(outputFile1,outputFile2);	
+	        				  outputFile1 = null;outputFile2 = null;
 	        				  error.setText("The Work has been Finished");
 		      	        		finish();
 		      					progress.setVisible(false);
@@ -582,6 +591,8 @@ Intro() throws IOException, InvalidFormatException {
 	        	  };
 	        	    Thread t1 = new Thread(rua);
 	        	t1.start();
+	        	  
+	        	 //
 	        	}
 	        	if(code==4){
 	        		progress.setVisible(true);
@@ -606,6 +617,7 @@ Intro() throws IOException, InvalidFormatException {
 	        				  back.setVisible(false); 
 	        				  new AMSdump(inputFile3,inputFile4);
 	        				  error.setText("The Work has been Finished");
+	        				  inputFile3 = null;inputFile4 = null;
 		      	        		finish();
 		      					progress.setVisible(false);
 	        				
@@ -621,6 +633,7 @@ Intro() throws IOException, InvalidFormatException {
 	        		Runnable run = new Runnable(){
 	        			public void run() {
 	        				b5.setEnabled(false);
+	        				Vb5.setEnabled(false);
 	        				submit.setEnabled(false);
 	        				executeAll.setEnabled(false);
 	        				error.setText("Please Wait");
@@ -652,6 +665,9 @@ Intro() throws IOException, InvalidFormatException {
 				
 	    		if(code==6){
 	    			count=0;
+	    			b2.setEnabled(false);
+    				b1.setEnabled(false);
+    				b2x.setEnabled(false);
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
 	        			public void run() {
@@ -669,7 +685,7 @@ Intro() throws IOException, InvalidFormatException {
 	        		  public void run(){
 	        			  try{
 	        				  back.setVisible(false); 
-	        				  error.setText("Please Wait While The Applicaiton is Working...");
+	        				  error.setText("Please Wait While The Application is Working...");
 	  	    					checkExecutePress(in1,in2,in3);	 	
 	  	    					error.setText("The Work has been Finished");
 		      	        		finish();
@@ -692,7 +708,7 @@ Intro() throws IOException, InvalidFormatException {
 public void helpMasterController(){
 	JFrame fa= new JFrame();  
 	
-	  d = new JDialog(fa , "Master Tracker Format Verify", true);  
+	JDialog d = new JDialog(fa , "Master Tracker Format Verify", true);  
       d.setLayout(null);
       JLabel label = new JLabel("Choose The Master Tracker Input File");
       label.setFont(new Font("Agency FB",Font.BOLD,24));
@@ -700,6 +716,9 @@ public void helpMasterController(){
       JButton b = new JButton ("Select File");
       b.setBounds(330,30,150,30);
       b.setMnemonic(KeyEvent.VK_F);
+      JButton b1 = new JButton ("Show Fields Format");
+      b1.setBounds(330,80,150,30);
+      b1.setMnemonic(KeyEvent.VK_Q);
       JButton sub = new JButton ("Submit");
       sub.setBounds(240,130,150,30);
       sub.setMnemonic(KeyEvent.VK_S);
@@ -718,30 +737,42 @@ public void helpMasterController(){
               }
           }  
       });  
-      sub.addActionListener ( new ActionListener()  
+      b1.addActionListener ( new ActionListener()  
       {  
           public void actionPerformed( ActionEvent e )  
           {  
+        	  new helpMaster();
+            	 
+              
+          }  
+      });  
+      sub.addActionListener ( new ActionListener()  
+      {  
+          public void actionPerformed( ActionEvent e )  
+          {  System.out.println(toCheckMaster);
         	 int res = helpMaster.checkFormat(toCheckMaster);
         	 if(res==19){
+        		 System.out.println(toCheckMaster + res);
         		 JOptionPane.showMessageDialog(null, "Yes, The Format of Master Tracker is Correct, You Can Continue");
         		 d.dispose();
-        		 toCheckMaster="";
+        		 toCheckMaster=null;
         	 }
         	 else if(res==-1){
         		 d.dispose();
-        		 toCheckMaster="";
+        		 toCheckMaster=null;
         	 }
         	 else{
-        		 toCheckMaster="";
+        		 System.out.println(toCheckMaster + res);
+        		 toCheckMaster=null;
         		 d.dispose();
+        		 JOptionPane.showMessageDialog(null, "Error In the Format of The Master Tracker");
         		 new helpMaster();
         	 }
         		 
           }  
       });  
       d.add( new JLabel ("Click button to continue."));  
-      d.add(b);d.add(label);d.add(sub);
+      d.add(b);d.add(label);d.add(sub);d.add(b1);
       d.setSize(500,200);
       d.setLocation(230,80);
       d.setVisible(true);  
@@ -751,7 +782,7 @@ public void helpMasterController(){
 public void helpCandidateController(){
 	JFrame faa= new JFrame();  
 	
-	  d1 = new JDialog(faa , "Candidate Referral Format Verify", true);  
+	JDialog d1 = new JDialog(faa , "Candidate Referral Format Verify", true);  
       d1.setLayout(null);
       JLabel label = new JLabel("Choose The Candidate Referral Input File");
       label.setFont(new Font("Agency FB",Font.BOLD,24));
@@ -759,6 +790,9 @@ public void helpCandidateController(){
       JButton b = new JButton ("Select File");
       b.setBounds(346,40,150,30);
       b.setMnemonic(KeyEvent.VK_F);
+      JButton b1 = new JButton ("Show Fields Format");
+      b1.setBounds(330,80,150,30);
+      b1.setMnemonic(KeyEvent.VK_Q);
       JButton suba = new JButton ("Submit");
       suba.setBounds(240,130,150,30);
       suba.setMnemonic(KeyEvent.VK_S);
@@ -777,23 +811,35 @@ public void helpCandidateController(){
               }
           }  
       });  
+      b1.addActionListener ( new ActionListener()  
+      {  
+          public void actionPerformed( ActionEvent e )  
+          {  
+        	  new helpCandidate();
+            	 
+              
+          }  
+      });  
       suba.addActionListener ( new ActionListener()  
       {  
           public void actionPerformed( ActionEvent e )  
           {  
         	 int res = helpCandidate.checkFormat(toCheckCandidate);
         	 if(res==24){
+        		 System.out.println(toCheckCandidate + res);
         		 JOptionPane.showMessageDialog(null, "Yes, The Format of Candidate Referral is Correct, You Can Continue");
         		 d1.dispose();
-        		 toCheckCandidate="";
+        		 toCheckCandidate=null;
         	 }
         	 else if(res==-1){
-        		 toCheckCandidate="";
+        		 toCheckCandidate=null;
         		 d1.dispose();
         	 }
         	 else{
-        		 toCheckCandidate="";
+        		 System.out.println(toCheckCandidate + res);
+        		 toCheckCandidate=null;
         		 d1.dispose();
+        		 JOptionPane.showMessageDialog(null, "Error In the Format of The Candidate Referral");
         		 new helpCandidate();
         	 }
         		 
@@ -801,7 +847,7 @@ public void helpCandidateController(){
       });  
       d1.add( new JLabel ("Click button to continue."));  
       d1.add(b);d1.add(label);d1.add(suba);
-      d1.setSize(500,200);
+      d1.setSize(500,200);d1.add(b1);
       d1.setLocation(230,80);
       d1.setVisible(true);  
 }
@@ -809,7 +855,7 @@ public void helpCandidateController(){
 public void helpAMSController(){
 	JFrame faae= new JFrame();  
 	
-	  d2 = new JDialog(faae , "AMS Dump Format Verify", true);  
+	JDialog d2 = new JDialog(faae , "AMS Dump Format Verify", true);  
       d2.setLayout(null);
       JLabel label = new JLabel("Choose The Ams Dump File");
       label.setFont(new Font("Agency FB",Font.BOLD,24));
@@ -817,6 +863,11 @@ public void helpAMSController(){
       JButton b = new JButton ("Select File");
       b.setBounds(330,40,150,30);
       b.setMnemonic(KeyEvent.VK_F);
+      
+      JButton b1 = new JButton ("Show Fields Format");
+      b1.setBounds(330,80,150,30);
+      b1.setMnemonic(KeyEvent.VK_Q);
+      
       JButton suba2 = new JButton ("Submit");
       suba2.setBounds(240,130,150,30);
       suba2.setMnemonic(KeyEvent.VK_S);
@@ -835,30 +886,40 @@ public void helpAMSController(){
               }
           }  
       });  
+      b1.addActionListener ( new ActionListener()  
+      {  
+          public void actionPerformed( ActionEvent e )  
+          {  
+        	  new helpAms().helpAmsa();
+            	 
+              
+          }  
+      });  
       suba2.addActionListener ( new ActionListener()  
       {  
           public void actionPerformed( ActionEvent e )  
           {  
-			int res = helpAms.checkFormat(toCheckAMS);
+			int res = new helpAms().checkFormat(toCheckAMS);
         	 if(res==7){
         		 JOptionPane.showMessageDialog(null, "Yes, The Format of AMS Dump is Correct, You Can Continue");
         		 d2.dispose();
-        		 toCheckAMS="";
+        		 toCheckAMS=null;
         	 }
         	 else if(res==-1){
-        		 toCheckAMS="";
+        		 toCheckAMS=null;
         		 d2.dispose();
         	 }
         	 else{
-        		 toCheckAMS="";
+        		 toCheckAMS=null;
         		 //System.out.println(res);
         		 d2.dispose();
-        		 new helpAms();
+        		 JOptionPane.showMessageDialog(null, "Error In the Format of AMS Dump");
+        		 new helpAms().helpAmsa();
         	 }
         		 
           }  
       });  
-      d2.add(b);d2.add(label);d2.add(suba2);
+      d2.add(b);d2.add(label);d2.add(suba2);d2.add(b1);
       d2.setSize(500,200);
       d2.setLocation(230,80);
       d2.setVisible(true);  
@@ -1247,16 +1308,24 @@ public void finish(){
 	b2.setEnabled(true);
 	b2.setVisible(false);
 	b2x.setVisible(false);
+	b2.setEnabled(true);
+	b1.setEnabled(true);
+	b2x.setEnabled(true);
 	b3.setEnabled(true);
 	b4.setEnabled(true);
 	b5.setEnabled(true);
 	submit.setEnabled(true);
 	submit.setVisible(false);
 	back.setVisible(false);
+	Vb1.setEnabled(true);
+	Vb2.setEnabled(true);
 	Vb1.setVisible(false);
 	Vb2.setVisible(false);
 	Vb3.setVisible(false);
 	Vb4.setVisible(false);
+	Vb3.setEnabled(true);
+	Vb4.setEnabled(true);
+	Vb5.setEnabled(true);
 	Vb5.setVisible(false);
 	progress.setValue(0);
 	progress.setVisible(false);
@@ -1267,7 +1336,7 @@ public void finish(){
 }
 
 
-public String checkAlphabet(int no){
+public static String checkAlphabet(int no){
 	if(no==0){return "A";}if(no==1){return "B";}if(no==2){return "C";}
 	if(no==3){return "D";}if(no==4){return "E";}if(no==5){return "F";}
 	if(no==6){return "G";}if(no==7){return "H";}if(no==8){return "I";}
@@ -1280,7 +1349,8 @@ public String checkAlphabet(int no){
 	return "Z";
 }
 public static void main(String[] args) throws IOException, InvalidFormatException{
-new Intro();
+Intro in = new Intro();
+in.Intros();
 }
 
 
