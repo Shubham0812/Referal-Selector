@@ -89,6 +89,7 @@ try{
 	    	 String va = cella.getStringCellValue();
 	    	 if(va.contains("Drop")){
 	    		 ttya.createCell(29).setCellValue("Comm4a/4b");
+	    		 continue;
 	    	 }else{
 	    	 String data27 = cell.getStringCellValue();
 	    	 if(data27.equals("Recruiter CV Screening")||data27.equals("Hiring Manager CV Screening")){
@@ -98,7 +99,7 @@ try{
 	    			 ttya.createCell(29).setCellValue("Comm3");
 	    			 continue;
 	    		 }
-	    	 else if(data27.equals("First Interview")){
+	    	 else if(data27.equals("First Interview")||data27.equals("Second Interview")){
 	    		 if(va.equals("Scheduled")||va.equals("OnHold")||va.equals("Shortlisted")||va.contains("Pending")){
 	    			 ttya.createCell(29).setCellValue("Comm3");
 	    			 continue;
@@ -109,6 +110,12 @@ try{
 	    		 }
 	    	 }
 	    	 else if(data27.equals("Final Interview/Onsite/Client")||data27.equals("Managerial Interview")||data27.equals("HR Interview")){
+	    		 Cell cellaa = ttya.getCell(28);
+		    	 String va2 = cellaa.getStringCellValue();
+		    	 if(va2.equals("Pending")){
+		    		 ttya.createCell(29).setCellValue("Comm4a/4b");
+	    			 continue;
+		    	 }
 	    		 ttya.createCell(29).setCellValue("Comm3");
 	    		 continue;
 	    	 }

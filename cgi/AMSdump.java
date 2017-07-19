@@ -4,6 +4,7 @@
 //*********************************************
 
 package cgi;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -333,7 +334,7 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 	    	  ttya.createCell(25).setCellValue(val);
 	     }
 	     else{
-	   	  ttya.createCell(25).setCellValue("");
+	   	  ttya.createCell(25).setCellValue(val);
 	     }
 	   }catch(NullPointerException er){}
 
@@ -351,7 +352,7 @@ AMSdump(String output1,String output2) throws IOException,InvalidFormatException
 //Writing to the file
 	 	FileOutputStream fileOut = new FileOutputStream("AmsDumpOutput.xlsx");
 	    wb.write(fileOut);; 
-	    
+	    Toolkit.getDefaultToolkit().beep();
 		fileOut.close();
 	    wbread.close();
 		System.out.println("Sheet1 of WorkBook has been created");

@@ -1,6 +1,7 @@
 package cgi;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.swing.UIManager.*;	
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -48,6 +49,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Intro{
 JFrame f;
+
 JLabel ta,label1,label2,label3,label4,label5,error;
 JButton b,ba,b1,b2,b2x,b3,b6,submit,Vb1,Vb2,b4,b5,Vb3,Vb4,Vb5,back,executeAll;
 JProgressBar jb;
@@ -60,45 +62,84 @@ int i=0,num=0,count=0,count2=0,numbercounter = 7,count3 =0;
 int code,cou = 0;
 //constructor
 public void Intros() throws IOException, InvalidFormatException {
-
-		JFrame.setDefaultLookAndFeelDecorated(true);	
+	try {
+	    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+	        if ("Nimbus".equals(info.getName())) {
+	            UIManager.setLookAndFeel(info.getClassName());
+	            UIManager.put("control", new Color(255,255,255));
+	            UIManager.put("nimbusFocus",Color.BLACK);
+	            UIManager.put("nimbusSelection",Color.BLACK);	
+	            UIManager.put("MenuBar[Enabled].borderPainter",Color.BLACK);
+	           //UIManager.put("Button.background",new Color(255,82,82));
+	            UIManager.put("nimbusOrange",new Color(255,82,82));
+	            UIManager.put("ProgressBar[Enabled+Indeterminate].foregroundPainter",Color.black);
+	            break;
+	        }
+	    }
+	} catch (Exception e) {
+	    // If Nimbus is not available, you can set the GUI to another look and feel.
+	}
 		f = new JFrame("Master Referral Validation Automator");
 		f.setLayout(null);
 		b = new JButton("Format Master Tracker: Select Master Tracker File");
+		b.setToolTipText("File which is named Requisition Applications or NJOYN Master Tracker");
+		b.setForeground(new Color(255,255,255));
+		b.setBackground(new Color(255,82,82));
 		b.setBounds(460, 130, 350, 30);
 		b.setMnemonic(KeyEvent.VK_M);
-		ba = new JButton("Format Candidate Referrals : Candidate File");
+		ba = new JButton("Format Candidate Referrals : Select Candidate File");
 		ba.setBounds(460, 130, 350, 30);
+		ba.setBackground(new Color(255,82,82));
+		ba.setToolTipText("File which is named Candidate Referrals (Generic)");
+		ba.setForeground(new Color(255,255,255));
 		ba.setVisible(false);
 		ba.setMnemonic(KeyEvent.VK_C);
 		b.setVisible(false);
 		b1 = new JButton("Select Master Tracker File: ");
+		b1.setBackground(new Color(255,82,82));
+		b1.setToolTipText("File which is named Requisition Applications or NJOYN Master Tracker");
+		b1.setForeground(new Color(255,255,255));
 		b1.setBounds(460, 130, 250,30);
 		b1.setVisible(false);
 		b1.setMnemonic(KeyEvent.VK_M);
 		b2 = new JButton("Select Candidate Referral File: ");
+		b2.setToolTipText("File which is named Candidate Referrals (Generic)");
 		b2.setBounds(460, 200, 250,30);
+		b2.setBackground(new Color(255,82,82));
+		b2.setForeground(new Color(255,255,255));
 		b2.setVisible(false);
 		b2.setMnemonic(KeyEvent.VK_C);
+
 		b2x = new JButton("Select AMS Dump File: ");
+		b2x.setBackground(new Color(255,82,82));
 		b2x.setBounds(460, 270, 250,30);
 		b2x.setVisible(false);
+		b2x.setForeground(new Color(255,255,255));
 		b2x.setMnemonic(KeyEvent.VK_I);
 		b3 = new JButton("Module 1: ");
 		b3.setBounds(10, 130, 150, 30);
+		b3.setBackground(new Color(255,82,82));
+		b3.setForeground(new Color(255,255,255));
 		b3.setMnemonic(KeyEvent.VK_1);
 		b3.setToolTipText("The output file contains the MR Requisition File along with Referred By Name and Email from Candidate Referrals");
 		b4 = new JButton("Module 2: ");
+		b4.setBackground(new Color(255,82,82));
 		b4.setBounds(10, 200, 150, 30);
+		b4.setForeground(new Color(255,255,255));
 		b4.setMnemonic(KeyEvent.VK_2);
 		b4.setToolTipText("The Output file contains Duplicacy Check along with ID, Source, Current Stage & Current Status");
 		b5 = new JButton("Module 3: ");
+		b5.setBackground(new Color(255,82,82));
 		b5.setBounds(10, 270, 150, 30);
+		b5.setForeground(new Color(255,255,255));
 		b5.setMnemonic(KeyEvent.VK_3);
 		b5.setToolTipText("The Output file contains Communication Mails for different Sources, Stage & Status ");
 		executeAll = new JButton("ExecuteAll");
 		executeAll.setMnemonic(KeyEvent.VK_E);
+		executeAll.setBackground(new Color(255,82,82));
+		executeAll.setForeground(new Color(255,255,255));
 		executeAll.setBounds(820, 320, 150, 30);
+		executeAll.setToolTipText("This Option will perform all the work for you just provide the 3 files");
 		Color color = UIManager.getColor("f.background");
 		back = new JButton("Back",new ImageIcon("C:\\Users\\shubham.k.singh\\Desktop\\cgi\\cgi\\back.png"));
 		back.setBounds(20, 20, 130, 30);
@@ -108,43 +149,50 @@ public void Intros() throws IOException, InvalidFormatException {
 		submit = new JButton("Submit Selected File(s)");
 		submit.setBounds(370,390,200,30);
 		submit.setVisible(false);
+		submit.setBackground(new Color(255,82,82));
+		submit.setForeground(new Color(255,255,255));
 		submit.setMnemonic(KeyEvent.VK_S);
 		Vb1= new JButton("Select Master Tracker File");
+		Vb1.setBackground(new Color(255,82,82));
+		Vb1.setToolTipText("File which is named Requisition Applications or NJOYN Master Tracker");
 		Vb1.setBounds(460,130,210,30);
 		Vb1.setVisible(false);
 		Vb1.setMnemonic(KeyEvent.VK_M);
 		Vb2= new JButton("Select Candiate Referral File");
-		Vb2.setBounds(680,130,210,30);
+		Vb2.setBackground(new Color(255,82,82));
+		Vb2.setToolTipText("File which is named Candidate Referrals (Generic)");
+		Vb2.setBounds(680,130,210,30);Vb1.setForeground(new Color(255,255,255));
+		Vb2.setForeground(new Color(255,255,255));
 		Vb2.setVisible(false);
 		Vb2.setMnemonic(KeyEvent.VK_C);
 		Vb3= new JButton("Select MR OutputFile");
 		Vb3.setBounds(460,200,210,30);
+		Vb3.setBackground(new Color(255,82,82));
 		Vb3.setVisible(false);
+		Vb3.setForeground(new Color(255,255,255));
 		Vb3.setMnemonic(KeyEvent.VK_M);
 		Vb4= new JButton("Select AMS Dump File");
 		Vb4.setBounds(680,200,210,30);
+		Vb4.setBackground(new Color(255,82,82));
 		Vb4.setVisible(false);
+		Vb4.setForeground(new Color(255,255,255));
 		Vb4.setMnemonic(KeyEvent.VK_E);
 		Vb5= new JButton("Select MR & AMS Output File");
 		Vb5.setBounds(680,270,210,30);
+		Vb5.setBackground(new Color(255,82,82));
+		Vb5.setForeground(new Color(255,255,255));
 		Vb5.setVisible(false);
 		Vb5.setMnemonic(KeyEvent.VK_F);
-		label1 = new JLabel("Format Master Tracker");
-		//label1.setBounds(190, 130, 500, 30);
-		//label1.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
-		label2 = new JLabel("Format Candidate Referral");
-		//label2.setBounds(190, 200, 500, 30);
-		//label2.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
 		label3 = new JLabel("Perform VLookup");
 		label3.setBounds(190, 130, 500, 30);
-		label3.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
+		label3.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 20));
 		label4 = new JLabel("VLookup From AMS Dump");
 		label4.setBounds(190, 200, 500, 30);
-		label4.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
+		label4.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 20));
 		label5 = new JLabel("Get Communication Mails");
 		label5.setBounds(190, 270, 500, 30);
-		label5.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
-		error = new JLabel("",SwingConstants.CENTER);
+		label5.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 20));
+		error = new JLabel("Hover Over the Buttons for more Information",SwingConstants.CENTER);
 		error.setBounds(10, 430, 950, 30);
 		error.setFont(new Font("Courier New", Font.BOLD, 20));
 		ta = new JLabel("Member Referral Validation Automator",SwingConstants.CENTER);
@@ -198,7 +246,7 @@ public void Intros() throws IOException, InvalidFormatException {
 		menuBar.add(aboutMenu);
 		f.setJMenuBar(menuBar);
 		f.setResizable(false);
-		f.add(b);f.add(label1);f.add(ta);f.add(b1);f.add(b2);f.add(b3);f.add(ba);f.add(label2);f.add(label3);f.add(error);f.add(Vb1);f.add(Vb2);
+		f.add(b);f.add(ta);f.add(b1);f.add(b2);f.add(b3);f.add(ba);f.add(label3);f.add(error);f.add(Vb1);f.add(Vb2);
 		f.add(submit);f.add(b4);f.add(b5);f.add(label4);f.add(label5);f.add(Vb3);f.add(Vb4);f.add(Vb5);f.add(executeAll);
 		f.setSize(1000,520);f.add(back);f.add(progress);f.add(b2x);
 		f.getContentPane().setBackground(new Color(255,255,255));
@@ -705,78 +753,85 @@ public void Intros() throws IOException, InvalidFormatException {
 }
 	
 
-public void helpMasterController(){
-	JFrame fa= new JFrame();  
-	
-	JDialog d = new JDialog(fa , "Master Tracker Format Verify", true);  
-      d.setLayout(null);
-      JLabel label = new JLabel("Choose The Master Tracker Input File");
-      label.setFont(new Font("Agency FB",Font.BOLD,24));
-      label.setBounds(10,10,300,30);
-      JButton b = new JButton ("Select File");
-      b.setBounds(330,30,150,30);
-      b.setMnemonic(KeyEvent.VK_F);
-      JButton b1 = new JButton ("Show Fields Format");
-      b1.setBounds(330,80,150,30);
-      b1.setMnemonic(KeyEvent.VK_Q);
-      JButton sub = new JButton ("Submit");
-      sub.setBounds(240,130,150,30);
-      sub.setMnemonic(KeyEvent.VK_S);
-      sub.setVisible(false);
-      b.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-              toCheckMaster = selectfile();
-              if(toCheckMaster==null){
-            	  JOptionPane.showMessageDialog(null, "File not Selected");
-              }
-              else{
-            	  sub.setVisible(true);
-            	 
-              }
-          }  
-      });  
-      b1.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-        	  new helpMaster();
-            	 
-              
-          }  
-      });  
-      sub.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  System.out.println(toCheckMaster);
-        	 int res = helpMaster.checkFormat(toCheckMaster);
-        	 if(res==19){
-        		 System.out.println(toCheckMaster + res);
-        		 JOptionPane.showMessageDialog(null, "Yes, The Format of Master Tracker is Correct, You Can Continue");
-        		 d.dispose();
-        		 toCheckMaster=null;
-        	 }
-        	 else if(res==-1){
-        		 d.dispose();
-        		 toCheckMaster=null;
-        	 }
-        	 else{
-        		 System.out.println(toCheckMaster + res);
-        		 toCheckMaster=null;
-        		 d.dispose();
-        		 JOptionPane.showMessageDialog(null, "Error In the Format of The Master Tracker");
-        		 new helpMaster();
-        	 }
-        		 
-          }  
-      });  
-      d.add( new JLabel ("Click button to continue."));  
-      d.add(b);d.add(label);d.add(sub);d.add(b1);
-      d.setSize(500,200);
-      d.setLocation(230,80);
-      d.setVisible(true);  
-}
+	public void helpMasterController(){
+		JFrame fa= new JFrame();  
+		
+		JDialog d = new JDialog(fa , "Master Tracker Format Verify", true);  
+	      d.setLayout(null);
+	      JLabel label = new JLabel("Choose The Master Tracker Input File");
+	      label.setFont(new Font("Agency FB",Font.BOLD,24));
+	      label.setBounds(10,10,300,30);
+	      JButton b = new JButton ("Select File");
+	      b.setBounds(330,30,150,30);
+	      b.setBackground(new Color(255,82,82));
+	      b.setMnemonic(KeyEvent.VK_F);
+	      b.setForeground(new Color(255,255,255));
+	      JButton b1 = new JButton ("Show Fields Format");
+	      b1.setBounds(330,80,150,30);
+	      b1.setBackground(new Color(255,82,82));
+	      b1.setMnemonic(KeyEvent.VK_Q);
+	      b1.setForeground(new Color(255,255,255));
+	      JButton sub = new JButton ("Submit");
+	      sub.setBounds(240,130,150,30);
+	      sub.setBackground(new Color(255,255,255));
+	      sub.setBackground(new Color(255,82,82));
+	      sub.setMnemonic(KeyEvent.VK_S);
+	      sub.setVisible(false);
+	      b.addActionListener ( new ActionListener()  
+	      {  
+	          public void actionPerformed( ActionEvent e )  
+	          {  
+	              toCheckMaster = selectfile();
+	              if(toCheckMaster==null){
+	            	  JOptionPane.showMessageDialog(null, "File not Selected");
+	              }
+	              else{
+	            	  sub.setVisible(true);
+	            	 
+	              }
+	          }  
+	      });  
+	      b1.addActionListener ( new ActionListener()  
+	      {  
+	          public void actionPerformed( ActionEvent e )  
+	          {  
+	        	  new helpMaster().justHelp();;
+	            	 
+	              
+	          }  
+	      });  
+	      sub.addActionListener ( new ActionListener()  
+	      {  
+	          public void actionPerformed( ActionEvent e )  
+	          {  System.out.println(toCheckMaster);
+	        	 int res =new helpMaster().checkFormat(toCheckMaster);
+	        	 if(res==19){
+	        		 System.out.println(toCheckMaster + res);
+	        		 JOptionPane.showMessageDialog(null, "Yes, The Format of Master Tracker is Correct, You Can Continue");
+	        		 d.dispose();
+	        		 toCheckMaster=null;
+	        	 }
+	        	 else if(res==-1){
+	        		 d.dispose();
+	        		 toCheckMaster=null;
+	        		 System.out.println(toCheckMaster + "lol");
+	        	 }
+	        	 else{
+	        		 System.out.println(toCheckMaster + res);
+	        		 d.dispose();
+	        		 JOptionPane.showMessageDialog(null, "Error In the Format of The Master Tracker");
+	        		 new helpMaster().helpMasters(toCheckMaster);;
+	        		 toCheckMaster=null;
+	        	 }
+	        		 
+	          }  
+	      });  
+	      d.add( new JLabel ("Click button to continue."));  
+	      d.add(b);d.add(label);d.add(sub);d.add(b1);
+	      d.setSize(500,200);
+	      d.setLocation(230,80);
+	      d.setVisible(true);  
+	}
 
 
 public void helpCandidateController(){
@@ -788,14 +843,20 @@ public void helpCandidateController(){
       label.setFont(new Font("Agency FB",Font.BOLD,24));
       label.setBounds(10,10,350,30);
       JButton b = new JButton ("Select File");
-      b.setBounds(346,40,150,30);
+      b.setBounds(330,40,150,30);
       b.setMnemonic(KeyEvent.VK_F);
+      b.setBackground(new Color(255,82,82));
       JButton b1 = new JButton ("Show Fields Format");
       b1.setBounds(330,80,150,30);
+      b1.setBackground(new Color(255,82,82));
       b1.setMnemonic(KeyEvent.VK_Q);
+      b.setForeground(new Color(255,255,255));
+      b1.setForeground(new Color(255,255,255));
       JButton suba = new JButton ("Submit");
       suba.setBounds(240,130,150,30);
       suba.setMnemonic(KeyEvent.VK_S);
+      suba.setBackground(new Color(255,255,255));
+      suba.setBackground(new Color(255,82,82));
       suba.setVisible(false);
       b.addActionListener ( new ActionListener()  
       {  
@@ -815,7 +876,7 @@ public void helpCandidateController(){
       {  
           public void actionPerformed( ActionEvent e )  
           {  
-        	  new helpCandidate();
+        	  new helpCandidate().justhelpCandidate();
             	 
               
           }  
@@ -824,7 +885,7 @@ public void helpCandidateController(){
       {  
           public void actionPerformed( ActionEvent e )  
           {  
-        	 int res = helpCandidate.checkFormat(toCheckCandidate);
+        	 int res = new helpCandidate().checkFormat(toCheckCandidate);
         	 if(res==24){
         		 System.out.println(toCheckCandidate + res);
         		 JOptionPane.showMessageDialog(null, "Yes, The Format of Candidate Referral is Correct, You Can Continue");
@@ -832,15 +893,17 @@ public void helpCandidateController(){
         		 toCheckCandidate=null;
         	 }
         	 else if(res==-1){
-        		 toCheckCandidate=null;
         		 d1.dispose();
+        		 toCheckCandidate=null;
+        		 System.out.println(toCheckCandidate + "lol");
+        		
         	 }
         	 else{
         		 System.out.println(toCheckCandidate + res);
-        		 toCheckCandidate=null;
         		 d1.dispose();
         		 JOptionPane.showMessageDialog(null, "Error In the Format of The Candidate Referral");
-        		 new helpCandidate();
+        		 new helpCandidate().helpCandidates(toCheckCandidate);;
+        		 toCheckCandidate=null;
         	 }
         		 
           }  
@@ -863,14 +926,18 @@ public void helpAMSController(){
       JButton b = new JButton ("Select File");
       b.setBounds(330,40,150,30);
       b.setMnemonic(KeyEvent.VK_F);
-      
+      b.setBackground(new Color(255,82,82));
+      b.setForeground(new Color(255,255,255));
       JButton b1 = new JButton ("Show Fields Format");
       b1.setBounds(330,80,150,30);
       b1.setMnemonic(KeyEvent.VK_Q);
-      
+      b1.setBackground(new Color(255,82,82));
+      b1.setForeground(new Color(255,255,255));
       JButton suba2 = new JButton ("Submit");
       suba2.setBounds(240,130,150,30);
       suba2.setMnemonic(KeyEvent.VK_S);
+      suba2.setBackground(new Color(255,82,82));
+      suba2.setForeground(new Color(255,255,255));
       suba2.setVisible(false);
       b.addActionListener ( new ActionListener()  
       {  
@@ -890,7 +957,7 @@ public void helpAMSController(){
       {  
           public void actionPerformed( ActionEvent e )  
           {  
-        	  new helpAms().helpAmsa();
+        	  new helpAms().justHelp();
             	 
               
           }  
@@ -910,11 +977,11 @@ public void helpAMSController(){
         		 d2.dispose();
         	 }
         	 else{
-        		 toCheckAMS=null;
         		 //System.out.println(res);
         		 d2.dispose();
         		 JOptionPane.showMessageDialog(null, "Error In the Format of AMS Dump");
-        		 new helpAms().helpAmsa();
+        		 new helpAms().helpAmss(toCheckAMS);;
+        		 toCheckAMS=null;
         	 }
         		 
           }  
@@ -933,20 +1000,23 @@ public void helpAMSController(){
 //
 public void checkExecutePress(String Master,String Candidate,String AmsDump) throws IOException, InvalidFormatException{
 	
-
-	
 	back.setEnabled(false);
 	executeAll.setEnabled(false);
 	new SheetCopy(Master,Candidate);
+	Toolkit.getDefaultToolkit().beep();
 	error.setText("VlookUp From Master Tracker and Candidate Referral Done");
 	new AMSdump("VLookupOutputs.xlsx",AmsDump);
+	Toolkit.getDefaultToolkit().beep();
 	error.setText("Duplicacy Check along with ID, Source, Current Stage & Current Status Done");
 	new Formatting("AmsDumpOutput.xlsx");
+	Toolkit.getDefaultToolkit().beep();
+	JOptionPane.showMessageDialog(f,
+		    "All work has been finished.");
 	//error.setText(" Communication Mails for different Sources, Stage & Status Done");
 	in1=null;
 	in2=null;
 	in3=null;
-}
+	}
 
 
 //file chooser option to select a file for master tracker
@@ -988,7 +1058,7 @@ public void read_write(String result) throws IOException{
 	//to read Master tracker from the file selected by the user
 	try{
 	FileInputStream myStream = new FileInputStream(result);
-	NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
+	NPOIFSFileSystem fs = new NPOIFSFileSystem(new File(result));
 	HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
 	HSSFSheet sheet = wb.getSheetAt(0);
 	HSSFRow row;
@@ -1287,6 +1357,7 @@ public void read_write(String result) throws IOException{
       wbwrite.write(fileOut);
       fileOut.close();
 	  wbwrite.close();
+	  Toolkit.getDefaultToolkit().beep();
 	  wb.close();
 	  fs.close();
 	}catch(Exception e)

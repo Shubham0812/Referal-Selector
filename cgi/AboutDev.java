@@ -39,17 +39,17 @@ public class AboutDev implements KeyListener {
 AboutDev(){
 		  JFrame fae= new JFrame();
 		  
-	        d2 = new JDialog(fae , "Member Referral Validation Automator v1.01 --ABOUT", true);  
+	        d2 = new JDialog(fae , "Member Referral Validation Automator v1.02 --ABOUT", true);  
 	        d2.setLayout(null);  
 			  Border blackline = BorderFactory.createLineBorder(Color.black);
-	        heading = new JLabel("Member Referral Validation Automator v1.01",SwingConstants.CENTER);
-	        heading.setBounds(200,20,500,30); 
+	        heading = new JLabel("Member Referral Validation Automator v1.02",SwingConstants.CENTER);
+	        heading.setBounds(160,20,500,30); 
 	        heading.setForeground(Color.CYAN);
 	        heading.setFont(new Font("Tahoma",Font.PLAIN,20));
 	        heading.setForeground(Color.BLUE);
 	        
 	        subheading = new JLabel("About",SwingConstants.CENTER);
-	        subheading.setBounds(350,55,150,30); 
+	        subheading.setBounds(310,55,150,30); 
 	        subheading.setForeground(Color.RED);
 	        subheading.setBorder(blackline);
 	        subheading.setFont(new Font("Tahoma",Font.PLAIN,20));
@@ -63,23 +63,23 @@ AboutDev(){
 	        l3 = new JLabel(" Developed by : Shubham Kumar Singh    |    Email-ID : singh.shubham0812@gmail.com");
 	        l3.setBounds(10,170,660,30);
 	        l3.setFont(new Font("Tahoma",Font.BOLD,15));
-	        l4 = new JLabel("If there are any bugs found send a mail to the email speficifed above.");
+	        l4 = new JLabel("If there are any bugs found send a mail to the email specified above.");
 	        l4.setBounds(10,210,750,30);
 	        l4.setFont(new Font("Tahoma",Font.BOLD,15));
 	        l3.setBorder(blackline);
 	        JLabel txt = new JLabel("Press any key to Exit...");
-	        txt.setBounds(350,250,300,30);
+	        txt.setBounds(305,250,300,30);
 	        txt.setForeground(Color.RED);
 	        txt.setFont(new Font("Tahoma",Font.PLAIN,16));
 	        
 	        
 	        
-	        
+	        d2.setResizable(false);
 	        d2.addKeyListener(this);  
 	        d2.add(heading);d2.add(txt);d2.add(subheading);
 	        d2.add(l1);d2.add(l2);d2.add(l3);d2.add(l4);//d2.add(l5);d2.add(l6);d2.add(l7);
-	        d2.setSize(880,320);
-	        d2.setLocation(250,30);
+	        d2.setSize(760,320);
+	        d2.setLocation(330,50);
 	      
 	        fae.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	        d2.setVisible(true);  

@@ -1,6 +1,7 @@
 package cgi;
 
 import java.awt.Color;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -69,7 +70,7 @@ public void modify(String result) throws IOException{
 	
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
 	FileInputStream myStream = new FileInputStream(result);
-    NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
+    NPOIFSFileSystem fs = new NPOIFSFileSystem(new File(result));
     HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
     HSSFSheet sheet = wb.getSheetAt(0);
 
@@ -211,6 +212,7 @@ public void modify(String result) throws IOException{
       fileOut.close();    
       wbmain.close();
       wbwrite.close();
+      Toolkit.getDefaultToolkit().beep();
       fs.close();
       wb.close();
  }

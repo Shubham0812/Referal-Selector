@@ -27,28 +27,29 @@ public class helper implements KeyListener {
 	 static java.util.List<String> fields = new ArrayList<String>();
 		java.util.List<DataStorer> data = new ArrayList<DataStorer>();
 	 helper(){
+		 
 		  JFrame fae= new JFrame();
 		  Border blackline = BorderFactory.createLineBorder(Color.black);
 	        d2 = new JDialog(fae , "Master Referral Validation Automator--HELP", true);  
 	        d2.setLayout(null);  
 	        heading = new JLabel(" HELP");
-	        heading.setBounds(10,20,70,30); 
-	        heading.setFont(new Font("Tahoma",Font.PLAIN,24));
+	        heading.setBounds(10,20,80,40); 
+	        heading.setFont(new Font("Tahoma",Font.BOLD,26));
 	        heading.setForeground(Color.BLUE);
 	       heading.setBorder(blackline);
 	        JTextArea area = new JTextArea();
 	        area.setText("");
 	        Color color = UIManager.getColor ( "Frame.background" );
 	        area.setBackground(color);
-	        area.setBounds(200,60,650,100);
+	        area.setBounds(200,60,567,77);
 	        area.setText("The application's purpose is to Automate the Member Referral Process\nIt contains different modules which automates the different parts of the\nprocess.");
-	        area.setFont(new Font("Times New Roman",Font.BOLD,18));
+	        area.setFont(new Font("Times New Roman",Font.BOLD,18));area.setFocusable(false);
 	        area.setEditable(false);
-	        
+	        UIManager.put("TabbedPane.background",new Color(107,210,219));
 	        JTabbedPane tp=new JTabbedPane();  
 	        tp.setBounds(170,170,600,300);  
 	        JLabel txt = new JLabel("It is Recommended to Check the format of the Input Files using the options from the Help Menu!");
-	        txt.setBounds(50,470,850,30);
+	        txt.setBounds(50,458,850,30);
 	        txt.setForeground(Color.RED);
 	        txt.setFont(new Font("Tahoma",Font.BOLD,17));
 	        
@@ -76,6 +77,7 @@ public class helper implements KeyListener {
 	        t2.setBackground(color);
 	        t2.setFont(new Font("Tahoma",Font.PLAIN,18));
 	        t2.setEditable(false);
+	     
 	        t2.setText("This module requires two Files : \n 1. The VLookup Output File \n 2. The AMS Dump File\n\nThe Module performs a Vlookup from these two files taking Mobile#\nand Email ID as reference and does a Duplicacy Check,\nand also gets the Source, Current Stage and Current Status\nin the output file which also contains the MR file data and\nthese fields.\n");
 	        p2.add(t2);
 	        JLabel l3 = new JLabel("Output File Name : AmsDumpOutput.xlsx  ");
@@ -99,12 +101,12 @@ public class helper implements KeyListener {
 	        t4.setBackground(color);
 	        t4.setFont(new Font("Tahoma",Font.PLAIN,18));
 	        t4.setEditable(false);
-	        t4.setText("This module requires three Files : \n1. The Master Tracker File\n2.The Candidate Referral File\n3.The Ams Dump File\n\nThe Module performs all the processes of MR Validation one by one.\n1.Vlookup is performed using the Master Tracker and the\nCandidate Referral file. for Referred By Name & Email\n\n2. The Duplicacy check is performed with the help of Ams Dump File\nand Unique, Duplicate & To Check for candidates is obtained along with\nSource, Current Stage & Status.\n\n3. This module gets the Communcation mailers for different cases for\nthe candidates, in case of UNIQUE \"comm1\" is alloted\nIn case of DUPLICATE with no Source \"Comm 2a\\2b\" is alloted.\nIn case of duplicates with either RA-MR-P,  RA-P or  ER\nthen different Comms are alloted based on current Source & Status.");
-	        
+	        t4.setText("This module requires three Files : \n1. The Master Tracker File\n2.The Candidate Referral File\n3.The Ams Dump File\n\nThe Module performs all the processes of MR Validation one by one.\n1.Vlookup is performed using the Master Tracker and the\nCandidate Referral file, and gets Referred By Name & Email \n\n2. The Duplicacy check is performed with the help of Ams Dump File\nand duplicacy check is done for candidates along with getting the \nSource, Current Stage & Status.\n\n3. This module gets the Communcation mailers for different cases for\nthe candidates, in case of UNIQUE \"comm1\" is alloted\nIn case of DUPLICATE with no Source \"Comm 2a\\2b\" is alloted.\nIn case of duplicates with either RA-MR-P,  RA-P or  ER\nthen different Comms are alloted based on current Source & Status.");
+	        t2.setFocusable(false);t1.setFocusable(false);t3.setFocusable(false);t4.setFocusable(false);
 	   
 	       p4.add(t4);
 	        
-	        
+	        d2.setResizable(false);
 	        tp.add(new JScrollPane(p4),"Module 4: Execute All At Once");
 	        d2.addKeyListener(this);  
 	        d2.add(heading);d2.add(txt);

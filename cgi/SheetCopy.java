@@ -1,5 +1,7 @@
 package cgi;
 
+import java.awt.Toolkit;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,11 +56,11 @@ SheetCopy(String output1,String output2) throws IOException{
      CellStyle num = wb.createCellStyle();
 		num.setDataFormat(HSSFDataFormat.getBuiltinFormat("0"));
 	 FileInputStream myStream = new FileInputStream(output1);
-	 NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
+	 NPOIFSFileSystem fs = new NPOIFSFileSystem(new File(output1));
 	 HSSFWorkbook wbread = new HSSFWorkbook(fs.getRoot(), true);
 	 
 	 FileInputStream myStream2 = new FileInputStream(output2);
-	 NPOIFSFileSystem fs2 = new NPOIFSFileSystem(myStream2);
+	 NPOIFSFileSystem fs2 = new NPOIFSFileSystem(new File(output2));
 	 HSSFWorkbook wbread2 = new HSSFWorkbook(fs2.getRoot(), true);	
 	 CreationHelper createHelper = wb.getCreationHelper();
 	 HSSFSheet sheetx  = wbread.getSheetAt(0);
@@ -394,11 +396,14 @@ SheetCopy(String output1,String output2) throws IOException{
 }//row not null ends
 
 		      //System.out.println("WorkBook has been created");
-		      if(i>=5){		    
+		      if(i>=5){
+		    	  try{
 		    	  for(int x =0;x<rowwrite[5].getLastCellNum();x++){
 			   Cell co = sheet1.getRow(5).getCell(x);
 				co.setCellStyle(style);
-		      }}
+		    	  }
+		      }catch(NullPointerException er){continue;}
+		    	  }
 		      
 //outer foor loop for sheet 1 writing ends
 }
@@ -554,6 +559,7 @@ SheetCopy(String output1,String output2) throws IOException{
 		fileOut.close();
 		wb.close();wbread.close();fs.close();wbread2.close();fs2.close();
 		System.out.println("Finale WorkBook has been created"); 
+		Toolkit.getDefaultToolkit().beep();
 
 }
 			
