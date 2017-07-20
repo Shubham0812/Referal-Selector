@@ -1,140 +1,119 @@
+/* Automation of Member Referral Process (June-2017)
+ * Author - Shubham Kumar Singh
+ * Email - singh.shubham0812@gmail.com
+ * College - Nitte Meenakshi Institute of Technology, Bangalore
+ */
+
+//the main class of the project, calls all other classes and procedures with this
 package cgi;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
+import java.awt.event.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.UIManager.*;
 import javax.swing.border.Border;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.CellReference;
+import javax.swing.*;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.NPOIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Intro{
+
+//static declaration of variables for the main Class
 JFrame f;
-JLabel ta,label1,label2,label3,label4,label5,error;
+JLabel ta,label3,label4,label5,error;
 JButton b,ba,b1,b2,b2x,b3,b6,submit,Vb1,Vb2,b4,b5,Vb3,Vb4,Vb5,back,executeAll;
 JProgressBar jb;
 JProgressBar progress;
-private static JDialog d,d1,d2;
 String result,result2;
-String outputFile1,outputFile2,inputFile3,inputFile4;
+String inputFile1,inputFile2,inputFile3,inputFile4;
 String in1,in2,in3;
 String toCheckMaster,toCheckCandidate,toCheckAMS;
-int i=0,num=0,count=0,count2=0,numbercounter = 7,count3 =0;    
-int code,cou = 0;
-Thread t[] = new Thread[20];
-boolean both_set = false,done=false;
-private Task task;
+int count=0,count2=0,count3 =0;
+int code;
 
-class Task extends SwingWorker<Void, Void> {
-    @Override
-    public Void doInBackground() {
-        int progress = 0; 
-        //Initialize progress property.
-        while (progress < 100) {
-            //Sleep for up to one second.
-            try {
-                Thread.sleep((200));
-            } catch (InterruptedException ignore) {}
-            //Make random progress.
-            progress += 1;
-            setProgress(progress);
-        }
-        return null;
-    }
-
-    /*
-     * Executed in event dispatching thread
-     */
-    @Override
-    public void done() {
-        Toolkit.getDefaultToolkit().beep();
-        f.setCursor(null); //turn off the wait cursor
-        error.setText("Yoyo");
-    }
-}
-
-
-//constructor
-Intro() throws IOException, InvalidFormatException {
-
-		JFrame.setDefaultLookAndFeelDecorated(true);	
+//constructor for the main class
+public void Intros() throws IOException, InvalidFormatException {
+try {
+		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+			if ("Nimbus".equals(info.getName())) {
+				UIManager.setLookAndFeel(info.getClassName());
+	            UIManager.put("control", new Color(255,255,255));
+	            UIManager.put("nimbusFocus",Color.BLACK);
+	            UIManager.put("nimbusSelection",Color.BLACK);
+	            UIManager.put("MenuBar[Enabled].borderPainter",Color.BLACK);
+	            UIManager.put("nimbusOrange",new Color(255,82,82));
+	            UIManager.put("ProgressBar[Enabled+Indeterminate].foregroundPainter",Color.black);
+	            break;}}
+	} catch (Exception e) {}// If Nimbus is not available, you can set the GUI to another look and feel.
+		//GUI components
 		f = new JFrame("Master Referral Validation Automator");
 		f.setLayout(null);
+		//buttons for the GUI
 		b = new JButton("Format Master Tracker: Select Master Tracker File");
+		b.setToolTipText("File which is named Requisition Applications or NJOYN Master Tracker");
+		b.setForeground(new Color(255,255,255));
+		b.setBackground(new Color(255,82,82));
 		b.setBounds(460, 130, 350, 30);
 		b.setMnemonic(KeyEvent.VK_M);
-		ba = new JButton("Format Candidate Referrals : Candidate File");
+		ba = new JButton("Format Candidate Referrals : Select Candidate File");
 		ba.setBounds(460, 130, 350, 30);
+		ba.setBackground(new Color(255,82,82));
+		ba.setToolTipText("File which is named Candidate Referrals (Generic)");
+		ba.setForeground(new Color(255,255,255));
 		ba.setVisible(false);
 		ba.setMnemonic(KeyEvent.VK_C);
 		b.setVisible(false);
 		b1 = new JButton("Select Master Tracker File: ");
+		b1.setBackground(new Color(255,82,82));
+		b1.setToolTipText("File which is named Requisition Applications or NJOYN Master Tracker");
+		b1.setForeground(new Color(255,255,255));
 		b1.setBounds(460, 130, 250,30);
 		b1.setVisible(false);
 		b1.setMnemonic(KeyEvent.VK_M);
 		b2 = new JButton("Select Candidate Referral File: ");
+		b2.setToolTipText("File which is named Candidate Referrals (Generic)");
 		b2.setBounds(460, 200, 250,30);
+		b2.setBackground(new Color(255,82,82));
+		b2.setForeground(new Color(255,255,255));
 		b2.setVisible(false);
 		b2.setMnemonic(KeyEvent.VK_C);
 		b2x = new JButton("Select AMS Dump File: ");
+		b2x.setBackground(new Color(255,82,82));
 		b2x.setBounds(460, 270, 250,30);
 		b2x.setVisible(false);
-		b2x.setMnemonic(KeyEvent.VK_A);
+		b2x.setForeground(new Color(255,255,255));
+		b2x.setMnemonic(KeyEvent.VK_I);
 		b3 = new JButton("Module 1: ");
 		b3.setBounds(10, 130, 150, 30);
+		b3.setBackground(new Color(255,82,82));
+		b3.setForeground(new Color(255,255,255));
 		b3.setMnemonic(KeyEvent.VK_1);
 		b3.setToolTipText("The output file contains the MR Requisition File along with Referred By Name and Email from Candidate Referrals");
 		b4 = new JButton("Module 2: ");
+		b4.setBackground(new Color(255,82,82));
 		b4.setBounds(10, 200, 150, 30);
+		b4.setForeground(new Color(255,255,255));
 		b4.setMnemonic(KeyEvent.VK_2);
 		b4.setToolTipText("The Output file contains Duplicacy Check along with ID, Source, Current Stage & Current Status");
 		b5 = new JButton("Module 3: ");
+		b5.setBackground(new Color(255,82,82));
 		b5.setBounds(10, 270, 150, 30);
+		b5.setForeground(new Color(255,255,255));
 		b5.setMnemonic(KeyEvent.VK_3);
 		b5.setToolTipText("The Output file contains Communication Mails for different Sources, Stage & Status ");
 		executeAll = new JButton("ExecuteAll");
 		executeAll.setMnemonic(KeyEvent.VK_E);
+		executeAll.setBackground(new Color(255,82,82));
+		executeAll.setForeground(new Color(255,255,255));
 		executeAll.setBounds(820, 320, 150, 30);
+		executeAll.setToolTipText("This Option will perform all the work for you just provide the 3 files");
 		Color color = UIManager.getColor("f.background");
 		back = new JButton("Back",new ImageIcon("C:\\Users\\shubham.k.singh\\Desktop\\cgi\\cgi\\back.png"));
 		back.setBounds(20, 20, 130, 30);
@@ -144,55 +123,64 @@ Intro() throws IOException, InvalidFormatException {
 		submit = new JButton("Submit Selected File(s)");
 		submit.setBounds(370,390,200,30);
 		submit.setVisible(false);
+		submit.setBackground(new Color(255,82,82));
+		submit.setForeground(new Color(255,255,255));
 		submit.setMnemonic(KeyEvent.VK_S);
 		Vb1= new JButton("Select Master Tracker File");
+		Vb1.setBackground(new Color(255,82,82));
+		Vb1.setToolTipText("File which is named Requisition Applications or NJOYN Master Tracker");
 		Vb1.setBounds(460,130,210,30);
 		Vb1.setVisible(false);
 		Vb1.setMnemonic(KeyEvent.VK_M);
 		Vb2= new JButton("Select Candiate Referral File");
-		Vb2.setBounds(680,130,210,30);
+		Vb2.setBackground(new Color(255,82,82));
+		Vb2.setToolTipText("File which is named Candidate Referrals (Generic)");
+		Vb2.setBounds(680,130,210,30);Vb1.setForeground(new Color(255,255,255));
+		Vb2.setForeground(new Color(255,255,255));
 		Vb2.setVisible(false);
 		Vb2.setMnemonic(KeyEvent.VK_C);
 		Vb3= new JButton("Select MR OutputFile");
 		Vb3.setBounds(460,200,210,30);
+		Vb3.setBackground(new Color(255,82,82));
 		Vb3.setVisible(false);
+		Vb3.setForeground(new Color(255,255,255));
 		Vb3.setMnemonic(KeyEvent.VK_M);
 		Vb4= new JButton("Select AMS Dump File");
 		Vb4.setBounds(680,200,210,30);
+		Vb4.setBackground(new Color(255,82,82));
 		Vb4.setVisible(false);
+		Vb4.setForeground(new Color(255,255,255));
 		Vb4.setMnemonic(KeyEvent.VK_E);
 		Vb5= new JButton("Select MR & AMS Output File");
 		Vb5.setBounds(680,270,210,30);
+		Vb5.setBackground(new Color(255,82,82));
+		Vb5.setForeground(new Color(255,255,255));
 		Vb5.setVisible(false);
 		Vb5.setMnemonic(KeyEvent.VK_F);
-		label1 = new JLabel("Format Master Tracker");
-		//label1.setBounds(190, 130, 500, 30);
-		//label1.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
-		label2 = new JLabel("Format Candidate Referral");
-		//label2.setBounds(190, 200, 500, 30);
-		//label2.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
+		//labels
 		label3 = new JLabel("Perform VLookup");
 		label3.setBounds(190, 130, 500, 30);
-		label3.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
+		label3.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 20));
 		label4 = new JLabel("VLookup From AMS Dump");
 		label4.setBounds(190, 200, 500, 30);
-		label4.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
+		label4.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 20));
 		label5 = new JLabel("Get Communication Mails");
 		label5.setBounds(190, 270, 500, 30);
-		label5.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 18));
-		error = new JLabel("",SwingConstants.CENTER);
+		label5.setFont(new Font("Times New Roman",Font.LAYOUT_LEFT_TO_RIGHT, 20));
+		error = new JLabel("Hover Over the Buttons for more Information",SwingConstants.CENTER);
 		error.setBounds(10, 430, 950, 30);
 		error.setFont(new Font("Courier New", Font.BOLD, 20));
 		ta = new JLabel("Member Referral Validation Automator",SwingConstants.CENTER);
-		ta.setBounds(215,10,600,80); 
+		ta.setBounds(215,10,600,80);
 		Border blackline = BorderFactory.createLineBorder(Color.black);
 		ta.setBorder(blackline);
 		ta.setFont(new Font("Tahoma", Font.BOLD, 26));
 		progress = new JProgressBar(0);
 		progress.setBounds(0,350,1000,20);
 		progress.setValue(0);
-		progress.setStringPainted(true);
-		progress.setVisible(false); 
+		//progress.setStringPainted(true);
+		progress.setVisible(false);
+		//Menu Bar for the Application
 		JMenuBar menuBar = new JMenuBar();
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic('O');
@@ -204,1102 +192,916 @@ Intro() throws IOException, InvalidFormatException {
 		fmt.setMnemonic(KeyEvent.VK_M);
 		fmt.setActionCommand("format master tracker");
 		optionsMenu.add(fmt);
-	
+
 		JMenuItem fcr = new JMenuItem("Format Candidate Referrals");
 		fcr.setMnemonic(KeyEvent.VK_C);
 		optionsMenu.add(fcr);
-		
+
 		JMenuItem helpHowTo = new JMenuItem("How to use the Application");
 		helpHowTo.setMnemonic(KeyEvent.VK_H);
 		helpMenu.add(helpHowTo);
-		
-		JMenuItem helpMT = new JMenuItem("Check Master Tracker Format");
+
+		JMenuItem helpMT = new JMenuItem("Check Master Tracker Fields");
 		helpMT.setMnemonic(KeyEvent.VK_M);
 		helpMenu.add(helpMT);
-		
-		JMenuItem helpCR = new JMenuItem("Check Candidate Referral Format");
+
+		JMenuItem helpCR = new JMenuItem("Check Candidate Referral Fields");
 		helpCR.setMnemonic(KeyEvent.VK_C);
 		helpMenu.add(helpCR);
-		
+
 		JMenuItem helpAMS = new JMenuItem("Check AMS Dump Format");
 		helpAMS.setMnemonic(KeyEvent.VK_A);
 		helpMenu.add(helpAMS);
-		
+
 		JMenuItem about = new JMenuItem("About Application");
 		about.setMnemonic(KeyEvent.VK_N);
 		aboutMenu.add(about);
-		
 		menuBar.add(optionsMenu);
 		menuBar.add(helpMenu);
 		menuBar.add(aboutMenu);
 		f.setJMenuBar(menuBar);
 		f.setResizable(false);
-		f.add(b);f.add(label1);f.add(ta);f.add(b1);f.add(b2);f.add(b3);f.add(ba);f.add(label2);f.add(label3);f.add(error);f.add(Vb1);f.add(Vb2);
+		//adding the components to the frame
+		f.add(b);f.add(ta);f.add(b1);f.add(b2);f.add(b3);f.add(ba);f.add(label3);f.add(error);f.add(Vb1);f.add(Vb2);
 		f.add(submit);f.add(b4);f.add(b5);f.add(label4);f.add(label5);f.add(Vb3);f.add(Vb4);f.add(Vb5);f.add(executeAll);
 		f.setSize(1000,520);f.add(back);f.add(progress);f.add(b2x);
 		f.getContentPane().setBackground(new Color(255,255,255));
 		f.setLocation(200,20);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
+		//action Listeners for the GUI
 		back.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        finish();}			
+	        finish();}
 	     });
 
 		about.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        new AboutDev();}			
+	        new AboutDev();}
 	     });
-		
+
 		helpHowTo.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        	new helper();}			
+	        	new helper();}
 	     });
 		helpMT.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        	helpMasterController();}			
+	        	new Intro().helpMasterController();}
 	     });
-		
+
 		helpCR.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        	helpCandidateController();}			
+	        	helpCandidateController();}
 	     });
-		
+
 		helpAMS.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        	helpAMSController();}			
+	        	helpAMSController();}
 	     });
-		
+
 		executeAll.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        	b3.setEnabled(false);
-	        	b4.setEnabled(false);
-	        	b5.setEnabled(false);	
-	        	b1.setVisible(true);
-	        	back.setVisible(true);
-	        	b2.setVisible(true);
+	        	b3.setEnabled(false); b4.setEnabled(false); b5.setEnabled(false);
+	        	b1.setVisible(true);  back.setVisible(true); b2.setVisible(true);
 	        	b2x.setVisible(true);
-	        	//submit.setVisible(true);
-	        }			
+	        }
 	     });
-		
+
 		b1.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-
 	        	//provide user to select the file
 	        	 in1 = selectfile();
 	        	 if(in1==null){
-	        	 error.setText("Master Tracker File Not Chosen");
-	        	 
-	        	 return;
-	        	 }
-	        	 count3+=1;
-	        	 	if(count3==2){
-	        	 		code = 6;
-	        	 		submit.setVisible(true);
-	        	 	}
+	        		 error.setText("Master Tracker File Not Chosen");
+	        		 return;}
+	        	 if(in2!=null&&in3!=null){
+	        		 code = 6;
+	        	 	 submit.setVisible(true);}
 	        	 	error.setText("Master Tracker File Selected");
-
-	        	
-	        	}			
+	        	}
 	     });
-		
+
 		b2.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-
 	        	//provide user to select the file
 	        	 in2 = selectfile();
 	        	 if(in2==null){
 	        	 error.setText("Candidate Referrals File Not Chosen");
-	        	 return;
-	        	 }
-	        	 count3+=1;
-	        	 	if(count3==3){
-	        	 		code = 6;
-	        	 		submit.setVisible(true);
-	        	 	}
-	        	 	error.setText("Candidate Referrals File Selected");
+	        	 return;}
+	        	 if(in1!=null&&in3!=null){
+	        	 		code = 6; submit.setVisible(true);}
+	        	 	error.setText("Candidate Referrals File Selected");}});
 
-	        	
-	        	}			
-	     });
-		
 		b2x.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-
 	        	//provide user to select the file
 	        	 in3 = selectfile();
 	        	 if(in3==null){
-	        	 error.setText("AMS Dump File Not Chosen");
-	        	 return;
-	        	 }
-	        	 	count3+=1;
-	        	 	if(count3==3){
-	        	 		code = 6;
-	        	 		submit.setVisible(true);
-	        	 	}
-	        	 	error.setText("AMS Dump File Selected");
+	        		 error.setText("AMS Dump File Not Chosen");
+	        		 return;}
+	        	 if(in1!=null&&in2!=null){
+	        		 code = 6; submit.setVisible(true);}
+	        	 	 error.setText("AMS Dump File Selected");}});
 
-	        	
-	        }			
-	     });
 		fmt.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        b.setVisible(true);
-	        error.setText("");
-	        back.setVisible(true);
-	        b2.setEnabled(false);
-	        b3.setEnabled(false);
-	        b4.setEnabled(false);
-	        b5.setEnabled(false);}			
-	     });
+	        	b.setVisible(true);
+	        	error.setText(""); back.setVisible(true); b2.setEnabled(false);
+	        	b3.setEnabled(false); b4.setEnabled(false); b5.setEnabled(false);}});
+
 		fcr.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        error.setText("");
-	        ba.setVisible(true);
-	        back.setVisible(true);
-	        b1.setEnabled(false);
- 	        b3.setEnabled(false);
-	        b4.setEnabled(false);
-	        b5.setEnabled(false);}			
-	     });
-		
+	        	error.setText("");
+	        	ba.setVisible(true); back.setVisible(true); b1.setEnabled(false);
+	        	b3.setEnabled(false); b4.setEnabled(false); b5.setEnabled(false);}});
+
 		b3.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        try {
 	        	error.setText("");
-		        back.setVisible(true);
-		        executeAll.setEnabled(false);
-		        b1.setEnabled(false);
-		        b2.setEnabled(false);
-		        b4.setEnabled(false);
-		        b5.setEnabled(false);
-		        Vb1.setVisible(true);
-		        Vb2.setVisible(true);
-				//new SheetCopy();
-				//finish();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}}			
-	     });
+	        	back.setVisible(true);
+	        	executeAll.setEnabled(false);
+	        	b1.setEnabled(false);
+	        	b2.setEnabled(false);
+	        	b4.setEnabled(false);
+	        	b5.setEnabled(false);
+	        	Vb1.setVisible(true);
+	        	Vb2.setVisible(true);}});
+
 		b4.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        try {
-	        	error.setText("");
-		        back.setVisible(true);
-		        executeAll.setEnabled(false);
-		        b1.setEnabled(false);
-		        b2.setEnabled(false);
-		        b3.setEnabled(false);
-		        b5.setEnabled(false);
-		        Vb3.setVisible(true);
-		        Vb4.setVisible(true);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}}			
-	     });
+	        	error.setText(""); back.setVisible(true);
+		        executeAll.setEnabled(false); b1.setEnabled(false); b2.setEnabled(false);
+		        b3.setEnabled(false); b5.setEnabled(false); Vb3.setVisible(true);
+		        Vb4.setVisible(true); }});
+
 		b5.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        error.setText("");
-	        executeAll.setEnabled(false);
-	        back.setVisible(true);
-	        Vb5.setVisible(true);
-	        b1.setEnabled(false);
-	        b2.setEnabled(false);
-	        b3.setEnabled(false);
-	        b4.setEnabled(false);}			
-	     });
-		
-		
+	        	error.setText(""); executeAll.setEnabled(false); back.setVisible(true);
+	        	Vb5.setVisible(true); b1.setEnabled(false); b2.setEnabled(false);
+	        	b3.setEnabled(false); b4.setEnabled(false);}});
+
+
 		Vb1.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        				error.setText("");
-	        	//provide user to select the file
-	        	  outputFile1 = selectfile();
-	        	 if(outputFile1==null){
-	        	 error.setText("Master Tracker File Not Chosen");
-	        	 count+=1;
-	        	 return;
-	        	 }
+	        	error.setText("");
+	            //provide user to select the file
+	        	inputFile1 = selectfile();
+	        	if(inputFile1==null){
+	        		error.setText("Master Tracker File Not Chosen");
+	        		count+=1;
+	        		return;}
 	        	 	error.setText("Master Tracker File Selected");
-	        }
+	           	if(inputFile2!=null){
+	        		code=3;
+	        		submit.setVisible(true);}}
 	     });
+
 		Vb2.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        				error.setText("");
+				error.setText("");
 	        	//provide user to select the file
-	        	  outputFile2 = selectfile();
-	        	 if(outputFile2==null){
-	        	 error.setText("Candidate Referral File Not Chosen");
-	        	 count+=1;
-	        	 return;
-	        	 }
+	        	inputFile2 = selectfile();
+	        	if(inputFile2==null){
+	        		error.setText("Candidate Referral File Not Chosen");
+	        		count+=1;
+	        		return;}
 	        	 error.setText("Candidate Referral File Selected");
-	        	 if(outputFile1!=null&&outputFile2!=null){
-	        		   code=3;
-	        		 submit.setVisible(true);
-	        	        	 }
-					 }
+	        	 if(inputFile1!=null){
+	        		 code=3;
+	        		 submit.setVisible(true);}}
 	     });
+
 		Vb3.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        				error.setText("");
+	        	error.setText("");
 	        	//provide user to select the file
-	        	  inputFile3 = selectfile();
-	        	 if(inputFile3==null){
-	        	 error.setText("MR Output File Not Chosen");
-	        	 count2+=1;
-	        	 return;
-	        	 }
+	        	inputFile3 = selectfile();
+	        	if(inputFile3==null){
+	        		error.setText("MR Output File Not Chosen");
+	        		count2+=1;
+	        		return;}
 	        	 	error.setText("MR Output File Selected");
-	        }
+		        	if(inputFile4!=null){
+		        		code=4;
+		        		submit.setVisible(true);}}
 	     });
+
 		Vb4.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        				error.setText("");
+	        	error.setText("");
 	        	//provide user to select the file
-	        				inputFile4 = selectfile();
-	        	 if(inputFile4==null){
-	        	 error.setText("AMS Dump File Not Chosen");
-	        	 count2+=1;
-	        	 return;
-	        	 }
+				inputFile4 = selectfile();
+	        	if(inputFile4==null){
+	        		error.setText("AMS Dump File Not Chosen"); count2+=1;
+	        		return;}
 	        	 error.setText("AMS Dump File Selected");
-	        	 if(inputFile3!=null&&inputFile4!=null){
-	        		   code=4;
-	        		 submit.setVisible(true);
-	        	        	 }
-					 }
+	        	 if(inputFile3!=null){
+	        		 code=4;
+	        		 submit.setVisible(true);}}
 	     });
+
 		Vb5.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	        				error.setText("");
+	        	error.setText("");
 	        	//provide user to select the file
-	        	  result = selectfile();
-	        	 if(result==null){
-	        	 error.setText("No File Chosen");
-	        	 finish();
-	        	 return;
-	        	 }
-	        		 code=5;
-	        		 submit.setVisible(true);
-					 }
+	        	result = selectfile();
+	        	if(result==null){
+	        		error.setText("No File Chosen");
+	        		finish();
+	        		return;}
+	        	code=5;
+	        	submit.setVisible(true);}
 	     });
+
 		b.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-        				error.setText("");
-        	//provide user to select the file
-        				
-        	  result = selectfile();
-        	 if(result==null){
-        	 error.setText("No File Chosen");
-        	 finish();
-        	 return;
-        	 }
-        		 code=1;
-        		 submit.setVisible(true);
-        		 //read_write(result);
-				 }
-     });
-		
+		error.setText("");
+        //provide user to select the file
+       	result = selectfile();
+        if(result==null){
+        	error.setText("No File Chosen");
+        	finish(); return;}
+    		code=1;
+    		submit.setVisible(true);}
+		});
+
 		ba.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	        				
-	        	//provide user to select the file
-	        	 result2 = selectfile();
-	        	 if(result2==null){
-	            	 error.setText("No File Chosen");
-	        	 finish();
-	        	 return;
-	        	 }
-	        		 code=2;
-	        		 submit.setVisible(true);
-
-					 }
+		public void actionPerformed(ActionEvent e) {
+	    //provide user to select the file
+		result2 = selectfile();
+        	if(result2==null){
+        		error.setText("No File Chosen"); finish();
+        		return;}
+        code=2;
+    	submit.setVisible(true);}
 	     });
-		
+
 		submit.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent e) {
-	        	
-	        	if(code==1){
-	        		progress.setVisible(true);
-	        		Runnable run = new Runnable(){
-	        			public void run() {
-	        				b1.setEnabled(false);
-	        				submit.setEnabled(false);
-	        				executeAll.setEnabled(false);
-	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(300);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-//	        							finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
-	        			}
-	        		};
-	        		Thread  t = new Thread(run);
-	        		t.start();
-	        	//	t[cou].start();
-	        	  Runnable rua = new Runnable(){
-	        		  public void run(){
-	        			  try{
-	        				  back.setVisible(false); 
-	      	        		read_write(result);			
-	      					
-	      					
-	        		  } catch (IOException e1) {}
-	        		  }  
+	    public void actionPerformed(ActionEvent e) {
+	    	if(code==1){
+	    		progress.setVisible(true);
+	        	Runnable run = new Runnable(){
+	        	public void run() {
+	        		b1.setEnabled(false);
+	        		submit.setEnabled(false);
+	        		executeAll.setEnabled(false);
+	        		error.setText("Please Wait");
+	        		progress.setIndeterminate(true);}
+	      };
+	        	Thread  t = new Thread(run);
+	        	t.start();
+	        	Runnable rua = new Runnable(){
+	        	public void run(){
+	        		try{
+	        			back.setVisible(false);
+	      	        	read_write(result);
+	      	        	error.setText("The Work has been Finished");
+	      	        	finish();
+	      				progress.setVisible(false);
+	        		  }catch (IOException e1) {}}
 	        	  };
-	        	    Thread t1 = new Thread(rua);
-	        	t1.start();
-	        			   }
-	        	
+	        	Thread t1 = new Thread(rua);
+	        	t1.start();}
+
 	        	if(code==2){
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
-	        			public void run() {
-	        				b2.setEnabled(false);
-	        				submit.setEnabled(false);
-	        				executeAll.setEnabled(false);
-	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(700);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        						//	finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
-	        			}
-	        		};
-	        		Thread  t = new Thread(run);
-	        		t.start();
-	        	//	t[cou].start();
-	        	  Runnable rua = new Runnable(){
-	        		  public void run(){
-	        			  try{
-	        				  back.setVisible(false); 
-	        				  candidate_referrals obj = new candidate_referrals();
-	        				  obj.modify(result2);
-	      					
-	        		  } catch (IOException e1) {}
-	        		  }  
+    				public void run() {
+    					b2.setEnabled(false);
+        				submit.setEnabled(false);
+        				executeAll.setEnabled(false);
+        				error.setText("Please Wait");
+        				 progress.setIndeterminate(true);}
 	        	  };
-	        	    Thread t1 = new Thread(rua);
-	        	t1.start();
-	        	}
+	        	Thread  t = new Thread(run);
+	        	t.start();
+	        	Runnable rua = new Runnable(){
+	        	public void run(){
+	        		try{
+	        			back.setVisible(false);
+	        			candidate_referrals obj = new candidate_referrals();
+        				obj.modify(result2);
+    				    error.setText("The Work has been Finished");
+      	        		finish();
+      					progress.setVisible(false);
+	        		  } catch (IOException e1) {}}
+	        	  };
+
+	        	Thread t1 = new Thread(rua);
+	        	t1.start();}
+
 	        	if(code==3){
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
-	        			public void run() {
-	        				b3.setEnabled(false);
-	        				Vb1.setEnabled(false);
-	        				Vb2.setEnabled(false);
-	        				submit.setEnabled(false);
-	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(1100);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        							//finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
-	        			}
+        			public void run() {
+        				b3.setEnabled(false);
+        				Vb1.setEnabled(false);
+        				Vb2.setEnabled(false);
+        				submit.setEnabled(false);
+        				executeAll.setEnabled(false);
+        				error.setText("Please Wait");
+        				 progress.setIndeterminate(true);}
 	        		};
-	        		Thread  t = new Thread(run);
-	        		t.start();
-	        	//	t[cou].start();
-	        	  Runnable rua = new Runnable(){
-	        		  public void run(){
-	        			  try{
-	        				  back.setVisible(false); 
-	        				  new SheetCopy(outputFile1,outputFile2);	
-	        				
-	      					
-	        		  } catch (IOException e1) {}
-	        		  }  
+	        	Thread  t = new Thread(run);
+	        	t.start();
+	        	Runnable rua = new Runnable(){
+	        	public void run(){
+	        		try{
+	        			back.setVisible(false);
+	        			new SheetCopy(inputFile1,inputFile2);
+        				inputFile1 = null;inputFile2 = null;
+        				error.setText("The Work has been Finished");
+        				finish();
+	      				progress.setVisible(false);
+	        		 	} catch (IOException e1) {}}
 	        	  };
-	        	    Thread t1 = new Thread(rua);
-	        	t1.start();
-	        	}
+        	    Thread t1 = new Thread(rua);
+	        	t1.start();}
+
 	        	if(code==4){
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
-	        			public void run() {
-	        				b4.setEnabled(false);
-	        				Vb4.setEnabled(false);
-	        				Vb3.setEnabled(false);
-	        				submit.setEnabled(false);
-	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(1300);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        				//			finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
-	        			}
+        			public void run() {
+        				b4.setEnabled(false);
+        				Vb3.setEnabled(false);
+        				Vb4.setEnabled(false);
+        				submit.setEnabled(false);
+        				executeAll.setEnabled(false);
+        				error.setText("Please Wait");
+        				 progress.setIndeterminate(true); }
 	        		};
-	        		Thread  t = new Thread(run);
-	        		t.start();
-	        	//	t[cou].start();
-	        	  Runnable rua = new Runnable(){
-	        		  public void run(){
-	        			  try{
-	        				  back.setVisible(false); 
-	        				  new AMSdump(inputFile3,inputFile4); 
-	        				
-	      					
+	        	Thread  t = new Thread(run);
+        		t.start();
+	        	Runnable rua = new Runnable(){
+        		public void run(){
+        			try{
+    				   back.setVisible(false);
+    				   new AMSdump(inputFile3,inputFile4);
+    				   error.setText("The Work has been Finished");
+    				   inputFile3 = null;inputFile4 = null;
+      	        	   finish();
+      				   progress.setVisible(false);
 	        		  } catch (IOException | InvalidFormatException e1) {}
-	        		  }  
+	        		  }
 	        	  };
-	        	    Thread t1 = new Thread(rua);
-	        	t1.start();
-	      }
+	        	 Thread t1 = new Thread(rua);
+	        	 t1.start();}
+
 	        	if(code==5){
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
-	        			public void run() {
-	        				b5.setEnabled(false);
-	        				Vb5.setEnabled(false);
-	        				
-	        				submit.setEnabled(false);
-	        				error.setText("Please Wait");
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(20);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        							//finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
-	        			}
+        			public void run() {
+        				b5.setEnabled(false);
+        				Vb5.setEnabled(false);
+        				submit.setEnabled(false);
+        				executeAll.setEnabled(false);
+        				error.setText("Please Wait");
+        				progress.setIndeterminate(true);}
 	        		};
-	        		Thread  t = new Thread(run);
-	        		t.start();
-	        	//	t[cou].start();
-	        	  Runnable rua = new Runnable(){
-	        		  public void run(){
-	        			  try{
-	        				  back.setVisible(false); 
-	        				  new Formatting(result);
-	        				
-	      					
+
+        		 Thread  t = new Thread(run);
+        		 t.start();
+        		 Runnable rua = new Runnable(){
+	        	 public void run(){
+	        		 try{
+        				 back.setVisible(false);
+        				 new Formatting(result);
+        				 error.setText("The Work has been Finished");
+      	        		 finish();
+      					 progress.setVisible(false);
 	        		  } catch (IOException | InvalidFormatException e1) {}
-	        		  }  
+	        		  }
 	        	  };
-	        	    Thread t1 = new Thread(rua);
-	        	t1.start();
-			
-	        			   }
-	        	
-				
+	        	 Thread t1 = new Thread(rua);
+	        	 t1.start();}
+
 	    		if(code==6){
+	    			count=0;
+	    			b2.setEnabled(false);
+    				b1.setEnabled(false);
+    				b2x.setEnabled(false);
 	        		progress.setVisible(true);
 	        		Runnable run = new Runnable(){
-
-	        			public void run() {
-		        			b1.setEnabled(false);
-		        			b2.setEnabled(false);
-		        			b2x.setEnabled(false);
-	        				 for(int i =0;i<101;i++){
-	        					 progress.setValue(i);
-	        					 try {
-	        						Thread.sleep(2940);
-	        						if(i==100){
-	        							error.setText("The Work has been Finished");
-	        							//finish();
-
-	        						}
-	        					} catch (InterruptedException e) {
-	        						// TODO Auto-generated catch block
-	        						e.printStackTrace();
-	        					}   
-	        				 }
-
-	        			}
+	        		public void run() {
+	        			submit.setEnabled(false);
+        				executeAll.setEnabled(false);
+    					error.setText("Please Wait");
+        				progress.setIndeterminate(true);}
 	        		};
-	        		Thread  t = new Thread(run);
-	        		t.start();
-	        	//	t[cou].start();
-	        	  Runnable rua = new Runnable(){
-	        		  public void run(){
-	        			  try{
-	        				  back.setVisible(false); 
-	        				  error.setText("Please Wait While The Applicaiton is Working...");
-	  	    					checkExecutePress(in1,in2,in3);	 	
-	      					
-	        		  } catch (IOException | InvalidFormatException e1) {}
-	        		  }  
+
+	        	 Thread  t = new Thread(run);
+	        	 t.start();
+	        	 Runnable rua = new Runnable(){
+	        	 public void run(){
+	        		 try{
+	        			back.setVisible(false);
+    				    error.setText("Please Wait While The Application is Working...");
+    					checkExecutePress(in1,in2,in3);
+    					error.setText("The Work has been Finished");
+      	        		finish();
+      					progress.setVisible(false);
+	        		  	} catch (IOException | InvalidFormatException e1) {}
+	        		  }
 	        	  };
-	        	    Thread t1 = new Thread(rua);
-	        	t1.start();
-	    		}
 
-	      }
+        	     Thread t1 = new Thread(rua);
+	        	 t1.start();}}
 	     });
+}//constructor ends
 
-		
-		
-	
-}
+//method for checking the fields of the Master Tracker
+	public void helpMasterController(){
+	JFrame fa= new JFrame();
+	JDialog d = new JDialog(fa , "Master Tracker Format Verify", true);
+	d.setLayout(null);
+	JLabel label = new JLabel("Choose The Master Tracker Input File");
+	label.setFont(new Font("Agency FB",Font.BOLD,24));
+	label.setBounds(10,10,300,30);
+	JButton b = new JButton ("Select File");
+	b.setBounds(330,30,150,30);
+	b.setBackground(new Color(255,82,82));
+	b.setMnemonic(KeyEvent.VK_F);
+	b.setForeground(new Color(255,255,255));
+	JButton b1 = new JButton ("Show Fields Format");
+	b1.setBounds(330,80,150,30);
+	b1.setBackground(new Color(255,82,82));
+	b1.setMnemonic(KeyEvent.VK_Q);
+	b1.setForeground(new Color(255,255,255));
+    JButton sub = new JButton ("Submit");
+    sub.setBounds(240,130,150,30);
+    sub.setBackground(new Color(255,255,255));
+    sub.setBackground(new Color(255,82,82));
+    sub.setMnemonic(KeyEvent.VK_S);
+    sub.setVisible(false);
+	b.addActionListener ( new ActionListener(){
+	public void actionPerformed( ActionEvent e ){
+		toCheckMaster = selectfile();
+	    if(toCheckMaster==null){
+	    	JOptionPane.showMessageDialog(null, "File not Selected");}
+	    else{
+	    	sub.setVisible(true);}
+	       }
+	      });
+	    b1.addActionListener ( new ActionListener(){
+        public void actionPerformed( ActionEvent e ){
+        	new helpMaster().justHelp();;}
+	      });
 
-public void helpMasterController(){
-	JFrame fa= new JFrame();  
-	
-	  d = new JDialog(fa , "Master Tracker Format Verify", true);  
-      d.setLayout(null);
-      JLabel label = new JLabel("Choose The Master Tracker Input File");
-      label.setFont(new Font("Agency FB",Font.BOLD,24));
-      label.setBounds(10,10,300,30);
-      JButton b = new JButton ("Select File");
-      b.setBounds(330,30,150,30);
-      b.setMnemonic(KeyEvent.VK_F);
-      JButton sub = new JButton ("Submit");
-      sub.setBounds(240,130,150,30);
-      sub.setMnemonic(KeyEvent.VK_S);
-      sub.setVisible(false);
-      b.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-              toCheckMaster = selectfile();
-              if(toCheckMaster==null){
-            	  JOptionPane.showMessageDialog(null, "File not Selected");
-              }
-              else{
-            	  sub.setVisible(true);
-            	 
-              }
-          }  
-      });  
-      sub.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-        	 int res = helpMaster.checkFormat(toCheckMaster);
-        	 if(res==19){
-        		 JOptionPane.showMessageDialog(null, "Yes, The Format of Master Tracker is Correct, You Can Continue");
-        		 d.dispose();
-        		 toCheckMaster="";
-        	 }
-        	 else if(res==-1){
-        		 d.dispose();
-        		 toCheckMaster="";
-        	 }
-        	 else{
-        		 toCheckMaster="";
-        		 d.dispose();
-        		 new helpMaster();
-        	 }
-        		 
-          }  
-      });  
-      d.add( new JLabel ("Click button to continue."));  
-      d.add(b);d.add(label);d.add(sub);
-      d.setSize(500,200);
-      d.setLocation(230,80);
-      d.setVisible(true);  
-}
+	    sub.addActionListener ( new ActionListener(){
+	    public void actionPerformed( ActionEvent e ){
+	    	int res =new helpMaster().checkFormat(toCheckMaster);
+	        if(res==19){
+	        	System.out.println(toCheckMaster + res);
+    		    JOptionPane.showMessageDialog(null, "Yes, The Format of Master Tracker is Correct, You Can Continue");
+	        	d.dispose();
+	        	toCheckMaster=null;}
+        	else if(res==-1){
+        		d.dispose();
+        		toCheckMaster=null;}
+	    	else{
+	    		d.dispose();
+	        	JOptionPane.showMessageDialog(null, "Error In the Format of The Master Tracker");
+	        	new helpMaster().helpMasters(toCheckMaster);;
+	        	toCheckMaster=null;}
+	        	}
+	      });
+	    d.add( new JLabel ("Click button to continue."));
+	    d.add(b);d.add(label);d.add(sub);d.add(b1);
+	    d.setSize(500,200);
+	    d.setLocation(230,80);
+	    d.setVisible(true);
+	}
 
 
 public void helpCandidateController(){
-	JFrame faa= new JFrame();  
-	
-	  d1 = new JDialog(faa , "Candidate Referral Format Verify", true);  
-      d1.setLayout(null);
-      JLabel label = new JLabel("Choose The Candidate Referral Input File");
-      label.setFont(new Font("Agency FB",Font.BOLD,24));
-      label.setBounds(10,10,350,30);
-      JButton b = new JButton ("Select File");
-      b.setBounds(346,40,150,30);
-      b.setMnemonic(KeyEvent.VK_F);
-      JButton suba = new JButton ("Submit");
-      suba.setBounds(240,130,150,30);
-      suba.setMnemonic(KeyEvent.VK_S);
-      suba.setVisible(false);
-      b.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-              toCheckCandidate = selectfile();
-              if(toCheckCandidate==null){
-            	  JOptionPane.showMessageDialog(null, "File not Selected");
-              }
-              else{
-            	  suba.setVisible(true);
-            	 
-              }
-          }  
-      });  
-      suba.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-        	 int res = helpCandidate.checkFormat(toCheckCandidate);
-        	 if(res==24){
-        		 JOptionPane.showMessageDialog(null, "Yes, The Format of Candidate Referral is Correct, You Can Continue");
-        		 d1.dispose();
-        		 toCheckCandidate="";
-        	 }
+	JFrame faa= new JFrame();
+	JDialog d1 = new JDialog(faa , "Candidate Referral Format Verify", true);
+    d1.setLayout(null);
+    JLabel label = new JLabel("Choose The Candidate Referral Input File");
+    label.setFont(new Font("Agency FB",Font.BOLD,24));
+    label.setBounds(10,10,350,30);
+    JButton b = new JButton ("Select File");
+    b.setBounds(330,40,150,30);
+    b.setMnemonic(KeyEvent.VK_F);
+    b.setBackground(new Color(255,82,82));
+    JButton b1 = new JButton ("Show Fields Format");
+    b1.setBounds(330,80,150,30);
+    b1.setBackground(new Color(255,82,82));
+    b1.setMnemonic(KeyEvent.VK_Q);
+    b.setForeground(new Color(255,255,255));
+    b1.setForeground(new Color(255,255,255));
+    JButton suba = new JButton ("Submit");
+    suba.setBounds(240,130,150,30);
+    suba.setMnemonic(KeyEvent.VK_S);
+    suba.setBackground(new Color(255,255,255));
+    suba.setBackground(new Color(255,82,82));
+    suba.setVisible(false);
+    b.addActionListener ( new ActionListener(){
+    	public void actionPerformed( ActionEvent e ){
+    		toCheckCandidate = selectfile();
+            if(toCheckCandidate==null){
+            	JOptionPane.showMessageDialog(null, "File not Selected");}
+            else{
+            	suba.setVisible(true);}
+          }
+      });
+    b1.addActionListener ( new ActionListener(){
+    	public void actionPerformed( ActionEvent e ){
+    	new helpCandidate().justhelpCandidate();}
+      });
+    suba.addActionListener ( new ActionListener(){
+        public void actionPerformed( ActionEvent e ){
+        	int res = new helpCandidate().checkFormat(toCheckCandidate);
+        	if(res==24){
+        		System.out.println(toCheckCandidate + res);
+        		JOptionPane.showMessageDialog(null, "Yes, The Format of Candidate Referral is Correct, You Can Continue");
+        		d1.dispose();
+        		toCheckCandidate=null;}
         	 else if(res==-1){
-        		 toCheckCandidate="";
         		 d1.dispose();
-        	 }
+        		 toCheckCandidate=null;
+        		 System.out.println(toCheckCandidate + "lol");}
         	 else{
-        		 toCheckCandidate="";
+        		 System.out.println(toCheckCandidate + res);
         		 d1.dispose();
-        		 new helpCandidate();
-        	 }
-        		 
-          }  
-      });  
-      d1.add( new JLabel ("Click button to continue."));  
-      d1.add(b);d1.add(label);d1.add(suba);
-      d1.setSize(500,200);
-      d1.setLocation(230,80);
-      d1.setVisible(true);  
+        		 JOptionPane.showMessageDialog(null, "Error In the Format of The Candidate Referral");
+        		 new helpCandidate().helpCandidates(toCheckCandidate);;
+        		 toCheckCandidate=null;}
+          }
+      });
+    d1.add( new JLabel ("Click button to continue."));
+    d1.add(b);d1.add(label);d1.add(suba);
+    d1.setSize(500,200);d1.add(b1);
+    d1.setLocation(230,80);
+    d1.setVisible(true);
 }
 
 public void helpAMSController(){
-	JFrame faae= new JFrame();  
-	
-	  d2 = new JDialog(faae , "AMS Dump Format Verify", true);  
-      d2.setLayout(null);
-      JLabel label = new JLabel("Choose The Ams Dump File");
-      label.setFont(new Font("Agency FB",Font.BOLD,24));
-      label.setBounds(10,10,350,30);
-      JButton b = new JButton ("Select File");
-      b.setBounds(330,40,150,30);
-      b.setMnemonic(KeyEvent.VK_F);
-      JButton suba2 = new JButton ("Submit");
-      suba2.setBounds(240,130,150,30);
-      suba2.setMnemonic(KeyEvent.VK_S);
-      suba2.setVisible(false);
-      b.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-              toCheckAMS = selectfile();
-              if(toCheckAMS==null){
-            	  JOptionPane.showMessageDialog(null, "File not Selected");
-              }
-              else{
-            	  suba2.setVisible(true);
-            	 
-              }
-          }  
-      });  
-      suba2.addActionListener ( new ActionListener()  
-      {  
-          public void actionPerformed( ActionEvent e )  
-          {  
-			int res = helpAms.checkFormat(toCheckAMS);
-        	 if(res==7){
-        		 JOptionPane.showMessageDialog(null, "Yes, The Format of AMS Dump is Correct, You Can Continue");
-        		 d2.dispose();
-        		 toCheckAMS="";
+	JFrame faae= new JFrame();
+	JDialog d2 = new JDialog(faae , "AMS Dump Format Verify", true);
+	d2.setLayout(null);
+	JLabel label = new JLabel("Choose The Ams Dump File");
+	label.setFont(new Font("Agency FB",Font.BOLD,24));
+	label.setBounds(10,10,350,30);
+	JButton b = new JButton ("Select File");
+	b.setBounds(330,40,150,30);
+	b.setMnemonic(KeyEvent.VK_F);
+	b.setBackground(new Color(255,82,82));
+	b.setForeground(new Color(255,255,255));
+	JButton b1 = new JButton ("Show Fields Format");
+	b1.setBounds(330,80,150,30);
+	b1.setMnemonic(KeyEvent.VK_Q);
+	b1.setBackground(new Color(255,82,82));
+	b1.setForeground(new Color(255,255,255));
+	JButton suba2 = new JButton ("Submit");
+	suba2.setBounds(240,130,150,30);
+	suba2.setMnemonic(KeyEvent.VK_S);
+	suba2.setBackground(new Color(255,82,82));
+	suba2.setForeground(new Color(255,255,255));
+	suba2.setVisible(false);
+	b.addActionListener ( new ActionListener(){
+		public void actionPerformed( ActionEvent e ){
+			toCheckAMS = selectfile();
+            if(toCheckAMS==null){
+            	JOptionPane.showMessageDialog(null, "File not Selected");}
+            else{
+            	suba2.setVisible(true);}
+		}
+      });
+	b1.addActionListener ( new ActionListener(){
+		public void actionPerformed( ActionEvent e ){
+			new helpAms().justHelp();}
+      });
+	suba2.addActionListener ( new ActionListener(){
+		public void actionPerformed( ActionEvent e ){
+			int res = new helpAms().checkFormat(toCheckAMS);
+			if(res==7){
+				JOptionPane.showMessageDialog(null, "Yes, The Format of AMS Dump is Correct, You Can Continue");
+        		d2.dispose();
+        		toCheckAMS=null;}
+			else if(res==-1){
+				toCheckAMS=null;
+				d2.dispose();}
+			else{
+				d2.dispose();
+				JOptionPane.showMessageDialog(null, "Error In the Format of AMS Dump");
+				new helpAms().helpAmss(toCheckAMS);;
+				toCheckAMS=null;
         	 }
-        	 else if(res==-1){
-        		 toCheckAMS="";
-        		 d2.dispose();
-        	 }
-        	 else{
-        		 toCheckAMS="";
-        		 System.out.println(res);
-        		 d2.dispose();
-        		 new helpAms();
-        	 }
-        		 
-          }  
-      });  
-      d2.add(b);d2.add(label);d2.add(suba2);
-      d2.setSize(500,200);
-      d2.setLocation(230,80);
-      d2.setVisible(true);  
+          }
+      });
+	d2.add(b);d2.add(label);d2.add(suba2);d2.add(b1);
+	d2.setSize(500,200);
+	d2.setLocation(230,80);
+	d2.setVisible(true);
 }
-//to check the contents of master tracker file
 
-
-
-
-
-//
+//method for executing all the functions of the program with one button
 public void checkExecutePress(String Master,String Candidate,String AmsDump) throws IOException, InvalidFormatException{
-	
-
-	
 	back.setEnabled(false);
 	executeAll.setEnabled(false);
 	new SheetCopy(Master,Candidate);
+	Toolkit.getDefaultToolkit().beep();
 	error.setText("VlookUp From Master Tracker and Candidate Referral Done");
 	new AMSdump("VLookupOutputs.xlsx",AmsDump);
+	Toolkit.getDefaultToolkit().beep();
 	error.setText("Duplicacy Check along with ID, Source, Current Stage & Current Status Done");
 	new Formatting("AmsDumpOutput.xlsx");
-	//error.setText(" Communication Mails for different Sources, Stage & Status Done");
+	Toolkit.getDefaultToolkit().beep();
+	JOptionPane.showMessageDialog(f,"All work has been finished.");
+	in1=null; in2=null; in3=null;
 }
 
 
-//file chooser option to select a file for master tracker
+//file choosing option to select a file for master tracker
 public String selectfile(){
-//Jfilechooser is used
 	JFileChooser fileChooser = new JFileChooser();
 	fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 	int result = fileChooser.showOpenDialog(f);
 	if (result == JFileChooser.APPROVE_OPTION) {
 	File selectedFile = fileChooser.getSelectedFile();
 	String filePath = selectedFile.getPath();
-	return filePath;
-	}
+	return filePath;}
 	return null;
 }
 
-
-
 //to read the Master tracker and apply the modifications to generate a new file
 public void read_write(String result) throws IOException{
-
-	
+	int date1=0,date2=0;
+	int phone = 0;String phoneA = "";
+	int req = 0;String reqA = "";
+	int can = 0;String canA = "";
+	int cellPhone = 0;
 	//to write a new formatted Master Tracker
 	Workbook wbwrite = new XSSFWorkbook();
 	CreationHelper createHelper = wbwrite.getCreationHelper();
-	
 	Sheet sheet_write = wbwrite.createSheet("Sheet1");
 	wbwrite.createSheet("Sheet2");
 	wbwrite.createSheet("Sheet3");
 	FormulaEvaluator evaluator = wbwrite.getCreationHelper().createFormulaEvaluator();
-	
 	CellStyle num = wbwrite.createCellStyle();
-		num.setDataFormat(HSSFDataFormat.getBuiltinFormat("0"));
-	
+	num.setDataFormat(HSSFDataFormat.getBuiltinFormat("0"));
 	//to read Master tracker from the file selected by the user
 	try{
-	FileInputStream myStream = new FileInputStream(result);
-	NPOIFSFileSystem fs = new NPOIFSFileSystem(myStream);
-	HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
-	HSSFSheet sheet = wb.getSheetAt(0);
-	HSSFRow row;
-	HSSFCell cell;
-	int fCell,lCell;
-	int rowStart = sheet.getFirstRowNum();
-	int rowEnd =   sheet.getLastRowNum();
-	Row rowwrite[] =new Row[rowEnd+1];
-	System.out.println(rowStart + "  "+rowEnd);
-    int counter1 = 7;
-    int counter2 = 7;	    
-    String number_c;
-	//font style to set font as bold
-	//code to iterate over the rows  
-    
+		NPOIFSFileSystem fs = new NPOIFSFileSystem(new File(result));
+		HSSFWorkbook wb = new HSSFWorkbook(fs.getRoot(), true);
+		HSSFSheet sheet = wb.getSheetAt(0);
+		HSSFRow row;
+		HSSFCell cell;
+		int fCell,lCell;
+		int rowStart = sheet.getFirstRowNum(); int rowEnd =   sheet.getLastRowNum();
+		Row rowwrite[] =new Row[rowEnd+1];
+		int counter1 = 7; int counter2 = 7; String number_c;
+		//code to iterate over the rows
+		try{
+			List<String> headings = new ArrayList<String>();
+			Row extra = sheet.getRow(5);
+			for(int counter=0;counter<extra.getLastCellNum();counter++){
+				Cell extraCell = extra.getCell(counter);
+				headings.add(extraCell.getStringCellValue());}
+				for(int ca = 0;ca<headings.size();ca++){
+					if(headings.get(ca).toString().equals("Applied Date (WEB)")){
+						date1=ca;}
+					if(headings.get(ca).toString().equals("Applied Date (WEB/MCH)")){
+						date2=ca;}
+					if(headings.get(ca).toString().equals("Candidate Phone Number")){
+						phone=ca;
+						phoneA = checkAlphabet(phone+1);}
+					if(headings.get(ca).toString().equals("Cell Phone")){
+						cellPhone=ca;}
+					if(headings.get(ca).toString().equals("REQ #")){
+						req=ca;
+						reqA = checkAlphabet(req+1);}
+					if(headings.get(ca).toString().equals("Candidate ID")){
+						can=ca;
+						canA = checkAlphabet(can+1);}}
+				System.out.println(headings.get(2).toString());
+				}catch(NullPointerException e){}
 	for(int i=rowStart;i<=rowEnd;i++){
 	row=sheet.getRow(i);
 	if(row==null){
-		//System.out.println("empty accessed");
-		continue;
-	}
+		continue;}
 	if(row!=null){
 		rowwrite[i]=sheet_write.createRow((short)i);
-		//first and last cell for the row
-		 fCell = row.getFirstCellNum(); 
-         lCell = row.getLastCellNum();	////System.out.println("First :  " + fCell + "Last : " + lCell);
+		//getting the first and last cell for the row
+		 fCell =  row.getFirstCellNum();
+         lCell = row.getLastCellNum();
          for(int iCell = fCell; iCell < lCell; iCell++) {
-         cell = row.getCell(iCell);
-		 if(cell==null){
-			 continue;
-		 				}
-		 //if the cell has value determine the type of value.
-		 else{
-		 //getting reference of current cell
-			 Cell currentCell = cell;
-			 sheet_write.autoSizeColumn(iCell);
-			 if(i>=6 && iCell==5 ||i>=6 && iCell==6){
-				 try{
-				 CellStyle dateStyle = wbwrite.createCellStyle();
-	    		 dateStyle.setDataFormat(
-	    		 createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
-	    		 Cell writeDate = rowwrite[i].createCell(iCell+1);
-	   	         writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
-	   	         writeDate.setCellStyle(dateStyle); 
-	   	         sheet_write.setColumnWidth(iCell,1100*4);
-	   	         continue;
-				 }catch(Exception ex){}
-			 }
-			 
-			 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {       
-    			 if(i>=6&& iCell ==9){
-    				 double value = currentCell.getNumericCellValue();
-    				 String axe =""+currentCell.getAddress();
-    				 if(axe.length()==2){
-    				 number_c = axe.substring(1,2);
-    				 }else if(axe.length()==3){
-    				 number_c = axe.substring(1,3);
-    				 }
-    				 else{
-    					 number_c=axe.substring(1,4);
-    				 }
-    				 //System.out.println("hehe  " + axe + number_c);
+        	 cell = row.getCell(iCell);
+        	 if(cell==null){
+        		 continue;}
+        	 else{
+        		 Cell currentCell = cell;
+        		 sheet_write.autoSizeColumn(iCell);
+        		 if(i>=6 && iCell==date1 ||i>=6 && iCell==date2){
+        			 try{
+        				 CellStyle dateStyle = wbwrite.createCellStyle();
+        				 dateStyle.setDataFormat(
+						 createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
+        				 Cell writeDate = rowwrite[i].createCell(iCell+1);
+        				 writeDate.setCellValue(row.getCell(iCell).getDateCellValue());
+        				 writeDate.setCellStyle(dateStyle);
+        				 sheet_write.setColumnWidth(iCell,1100*4);
+        				 continue;
+        			 	}catch(Exception ex){}}
+        		 if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+        			 if(i>=6&& iCell ==phone){
+        				 double value = currentCell.getNumericCellValue();
+        				 String axe =""+currentCell.getAddress();
+        				 if(axe.length()==2){
+        					 number_c = axe.substring(1,2);}
+        				 else if(axe.length()==3){
+        					 number_c = axe.substring(1,3);}
+        				 else if(axe.length()==4){
+        					 number_c=axe.substring(1,4);}
+        				 else{
+        					 number_c=axe.substring(1,5);}
     				 rowwrite[i] = sheet_write.getRow((short)i);
-    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
-    				 
-    				 CellReference cellReference = new CellReference("K"+number_c);
+    				 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+value+",10)");
+    				 CellReference cellReference = new CellReference(phoneA+number_c);
     				 Row rowF = sheet_write.getRow(cellReference.getRow());
-    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    	         		//System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
-    	         		CellValue cellValue = evaluator.evaluate(cellF);
-  
-    	         	Cell xcu =rowwrite[i].createCell(iCell+1);
-    	         	xcu.setCellStyle(num);
-    	         //	long final_result = Integer.parseInt(cellValue.getStringValue());
-    	    //     	//System.out.println(final_result);
-	         		//System.out.println("  "+cellValue.getStringValue());
-    	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
-    				 continue;
-    				 
-    			 }
-                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());    
+    				 Cell cellF = rowF.getCell(cellReference.getCol());
+    	         	 CellValue cellValue = evaluator.evaluate(cellF);
+    	         	 Cell xcu =rowwrite[i].createCell(iCell+1);
+    	         	 xcu.setCellStyle(num);
+    	         	 xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+    				 continue;}
+                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getNumericCellValue());
 				 }
-			 
-			 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
-		//		 //System.out.print(currentCell.getStringCellValue() + "--");
-    			 if(i>=6&& iCell ==9){
-    				 
+
+        		 else if (currentCell.getCellTypeEnum() == CellType.STRING) {
+        			 if(i>=6&& iCell ==phone){
     				 try{
     					 Row are = sheet.getRow(i);
-    					 //System.out.println("huh" + are.getCell(9).getStringCellValue()+"a");
-    					 if(are.getCell(9).getStringCellValue().equals(" ")){
-    						 {
-    							 try{
-    								 Cell currentCells = row.getCell(12);
-    								 if (currentCells.getCellTypeEnum() == CellType.NUMERIC) {
-    								 double value = currentCells.getNumericCellValue();
+    					 if(are.getCell(phone).getStringCellValue().equals(" ")||are.getCell(phone).getStringCellValue().equals("")){
+    						 System.out.println("hoot hoot : "+i);
+    						 try{
+    							 Cell currentCells = row.getCell(cellPhone);
+					 			 if (currentCells.getCellTypeEnum() == CellType.NUMERIC) {
+					 				 double value = currentCells.getNumericCellValue();
     			    				 String axe =""+currentCells.getAddress();
     			    				 if(axe.length()==2){
-    			    				 number_c = axe.substring(1,2);
-    			    				 }else if(axe.length()==3){
-    			    				 number_c = axe.substring(1,3);
-    			    				 }
+    			    					 number_c = axe.substring(1,2);}
+    			    				 else if(axe.length()==3){
+    			    					 number_c = axe.substring(1,3);}
+    			    				 else if(axe.length()==4){
+    			    					 number_c=axe.substring(1,4);}
     			    				 else{
-    			    					 number_c=axe.substring(1,4);
-    			    				 }
+    			    					 number_c=axe.substring(1,5);}
     			    				 rowwrite[i] = sheet_write.getRow((short)i);
-    			    				 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+value+",10)");
-    			    				 
-    			    				 CellReference cellReference = new CellReference("K"+number_c);
+    			    				 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+value+",10)");
+    			    				 CellReference cellReference = new CellReference(phoneA+number_c);
     			    				 Row rowF = sheet_write.getRow(cellReference.getRow());
-    			    	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    			    	         		//System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
-    			    	         		CellValue cellValue = evaluator.evaluate(cellF);
-    			  
-    			    	         	Cell xcu =rowwrite[i].createCell(iCell+1);
-    			    	         	xcu.setCellStyle(num);
-    			    	         //	long final_result = Integer.parseInt(cellValue.getStringValue());
-    			    	    //     	//System.out.println(final_result);
-    				         		//System.out.println("  "+cellValue.getStringValue());
-    			    	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
-    			    				 continue;
-    								 }
-    								 else if (currentCells.getCellTypeEnum() == CellType.STRING) {
-    				    				 String add =""+currentCell.getAddress();
-    				    				 if(add.length()==2){number_c = add.substring(1,2);}
-    				    				 else if(add.length()==3){number_c = add.substring(1,3);}
-    				        		     else{number_c=add.substring(1,4);}
-    				    				 String value = currentCells.getStringCellValue();
-    				    				 try{
-    				    					 String newValue = value.replaceAll("-","");
-    				    					 rowwrite[i] = sheet_write.getRow((short)i);
-    				    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    				    					 CellReference cellReference = new CellReference("K"+number_c);
-    				        				 Row rowF = sheet_write.getRow(cellReference.getRow());
-    				        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    				        	         		CellValue cellValue = evaluator.evaluate(cellF);
-    				        	         		//System.out.println("  "+cellValue.getStringValue());
-    				        	               	Cell xcu =rowwrite[i].createCell(iCell+1);
-    				            	         	xcu.setCellStyle(num);
-    				            	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
-    				            	         	continue;
-    				    					 }catch(Exception e){
-    				    					 String newValue = value.replaceAll("\\s","");
-    				    					 try{
-    				    						 rowwrite[i] = sheet_write.getRow((short)i);
-    				        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    				        					 CellReference cellReference = new CellReference("K"+number_c);
-    				            				 Row rowF = sheet_write.getRow(cellReference.getRow());
-    				            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-    				            	         		CellValue cellValue = evaluator.evaluate(cellF);
-    				            	         		//System.out.println("  "+cellValue.getStringValue());
-    				            	               	Cell xcu =rowwrite[i].createCell(iCell+1);
-    				                	         	xcu.setCellStyle(num);
-    				                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
-    				        				 }catch(Exception af){}
-    				    					 }
-    				    					 continue;
-    								 }
-    								 
-    							 }catch(NullPointerException nula){} 
-    						 }
+			    	         		 Cell cellF = rowF.getCell(cellReference.getCol());
+			    	         		 CellValue cellValue = evaluator.evaluate(cellF);
+			    	         		 Cell xcu =rowwrite[i].createCell(iCell+1);
+    			    	         	 xcu.setCellStyle(num);
+    			    	         	 xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+    			    				 continue;}
+    							 else if (currentCells.getCellTypeEnum() == CellType.STRING) {
+    								 String add =""+currentCell.getAddress();
+				    				 if(add.length()==2){number_c = add.substring(1,2);}
+    				    			 else if(add.length()==3){number_c = add.substring(1,3);}
+				    				 else if(add.length()==4){number_c=add.substring(1,4);}
+				    				 else{number_c=add.substring(1,5);}
+				    				 String value = currentCells.getStringCellValue();
+				    				 try{
+				    					 String newValue = value.replaceAll("-","");
+				    					 rowwrite[i] = sheet_write.getRow((short)i);
+				    					 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+				    					 CellReference cellReference = new CellReference(phoneA+number_c);
+				        				 Row rowF = sheet_write.getRow(cellReference.getRow());
+			        	         		 Cell cellF = rowF.getCell(cellReference.getCol());
+			        	         		 CellValue cellValue = evaluator.evaluate(cellF);
+				        	         	 Cell xcu =rowwrite[i].createCell(iCell+1);
+			            	         	 xcu.setCellStyle(num);
+			            	         	 xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+			            	         	 continue;
+				    				 	}catch(Exception e){
+				    				 		String newValue = value.replaceAll("\\s","");
+				    				 		try{
+				    				 			rowwrite[i] = sheet_write.getRow((short)i);
+					        					rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+					        					CellReference cellReference = new CellReference(phoneA+number_c);
+					            				Row rowF = sheet_write.getRow(cellReference.getRow());
+				            	         		Cell cellF = rowF.getCell(cellReference.getCol());
+				            	         		CellValue cellValue = evaluator.evaluate(cellF);
+				            	             	Cell xcu =rowwrite[i].createCell(iCell+1);
+				                	          	xcu.setCellStyle(num);
+				                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+    				        			}catch(Exception af){}
+    				    			}
+    				    			 	continue;
+    							}
+    						}catch(NullPointerException nula){}
     					 }
-    				 }catch(NullPointerException a){
-    					 //System.out.println("I value = " + i + "haha");
-    				 }
-    				 
-    				 
-    				 String add =""+currentCell.getAddress();
-    				 if(add.length()==2){number_c = add.substring(1,2);}
-    				 else if(add.length()==3){number_c = add.substring(1,3);}
-        		     else{number_c=add.substring(1,4);}
-    				 String value = currentCell.getStringCellValue();
-    				 try{
-    					 String newValue = value.replaceAll("-","");
-    					 rowwrite[i] = sheet_write.getRow((short)i);
-    					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-    					 CellReference cellReference = new CellReference("K"+number_c);
-        				 Row rowF = sheet_write.getRow(cellReference.getRow());
-        	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
+    				 	}catch(NullPointerException a){}
+    				 	String add =""+currentCell.getAddress();
+    				 	if(add.length()==2){number_c = add.substring(1,2);}
+    				 	else if(add.length()==3){number_c = add.substring(1,3);}
+    				 	else if(add.length()==4){number_c=add.substring(1,4);}
+    				 	else{number_c=add.substring(1,5);}
+    				 	String value = currentCell.getStringCellValue();
+    				 	try{
+    				 		String newValue = value.replaceAll("-","");
+    				 		rowwrite[i] = sheet_write.getRow((short)i);
+    				 		rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+    				 		CellReference cellReference = new CellReference(phoneA+number_c);
+    				 		Row rowF = sheet_write.getRow(cellReference.getRow());
+        	         		Cell cellF = rowF.getCell(cellReference.getCol());
         	         		CellValue cellValue = evaluator.evaluate(cellF);
-        	         		//System.out.println("  "+cellValue.getStringValue());
         	               	Cell xcu =rowwrite[i].createCell(iCell+1);
             	         	xcu.setCellStyle(num);
             	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
             	         	continue;
     					 }catch(Exception e){
-    					 String newValue = value.replaceAll("\\s","");
-    					 try{
-    						 rowwrite[i] = sheet_write.getRow((short)i);
-        					 rowwrite[i].createCell(9+1).setCellFormula("RIGHT("+newValue+",10)");
-        					 CellReference cellReference = new CellReference("K"+number_c);
-            				 Row rowF = sheet_write.getRow(cellReference.getRow());
-            	         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-            	         		CellValue cellValue = evaluator.evaluate(cellF);
-            	         		//System.out.println("  "+cellValue.getStringValue());
-            	               	Cell xcu =rowwrite[i].createCell(iCell+1);
-                	         	xcu.setCellStyle(num);
-                	         	xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
-        				 }catch(Exception af){}
+    						 String newValue = value.replaceAll("\\s","");
+    						 try{
+    							 rowwrite[i] = sheet_write.getRow((short)i);
+    							 rowwrite[i].createCell(phone+1).setCellFormula("RIGHT("+newValue+",10)");
+    							 CellReference cellReference = new CellReference(phoneA+number_c);
+    							 Row rowF = sheet_write.getRow(cellReference.getRow());
+            	         		 Cell cellF = rowF.getCell(cellReference.getCol());
+            	         		 CellValue cellValue = evaluator.evaluate(cellF);
+            	                 Cell xcu =rowwrite[i].createCell(iCell+1);
+                	         	 xcu.setCellStyle(num);
+                	         	 xcu.setCellValue(Double.parseDouble(cellValue.getStringValue()));
+        				  }catch(Exception af){}
     					 }
-    					 continue;}
-                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getStringCellValue());}
-				 else if(currentCell.getCellTypeEnum() == CellType.FORMULA){
-					 System.out.print(currentCell.getStringCellValue() + "--");
-                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getCellFormula());}
-				 else if (currentCell.getCellTypeEnum() == CellType.ERROR){
-                  System.out.print(currentCell.getStringCellValue() + "--");
-                     rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());}
-			 
-			 }}//cell for loop ends
-  
+    					 continue;
+    					 }
+                     	rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getStringCellValue());}
+				 		else if(currentCell.getCellTypeEnum() == CellType.FORMULA){
+				 			rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getCellFormula());}
+				 		else if (currentCell.getCellTypeEnum() == CellType.ERROR){
+                            rowwrite[i].createCell(iCell+1).setCellValue(currentCell.getErrorCellValue());}
+        	 	}
+        	 }
          //Validation Index Calculation
          	if(i>=6){
          		rowwrite[i]=sheet_write.getRow((short)i);;
-         		rowwrite[i].createCell(0).setCellFormula("CONCATENATE(F"+counter1+",D"+counter2+")");
-         		
+         		rowwrite[i].createCell(0).setCellFormula("CONCATENATE("+reqA+counter1+","+canA+counter2+")");
          		CellReference cellReference = new CellReference("A"+counter1);
          		Row rowF = sheet_write.getRow(cellReference.getRow());
-         		Cell cellF = rowF.getCell(cellReference.getCol()); 
-         		//System.out.print(cellReference.getRow() + "  " + cellReference.getCol());
+         		Cell cellF = rowF.getCell(cellReference.getCol());
          		CellValue cellValue = evaluator.evaluate(cellF);
-         		//System.out.println("  "+cellValue.getStringValue());
          		rowwrite[i].createCell(0).setCellValue(cellValue.getStringValue());
          		counter1+=1;counter2+=1;}
          	if(i==5){
          		rowwrite[i]=sheet_write.getRow((short)i);;
-         		rowwrite[i].createCell(0).setCellValue("Validation Index");}}//row not null ends
-	
-	 System.out.println(result);
-      System.out.println("WorkBook has been created");
-      }//row ends
-	  String path = result.replaceAll(".xls","");
-	  FileOutputStream fileOut = new FileOutputStream(path+"(Output1).xlsx");
-      wbwrite.write(fileOut);
-      fileOut.close();
-	  wbwrite.close();
-	  wb.close();
-	  fs.close();
+         		rowwrite[i].createCell(0).setCellValue("Validation Index");}
+         	}//row not null ends
+   }//loops end
+	String path = result.replaceAll(".xls","");
+	FileOutputStream fileOut = new FileOutputStream(path+"(Output1).xlsx");
+    wbwrite.write(fileOut);
+    fileOut.close();
+	wbwrite.close();
+	Toolkit.getDefaultToolkit().beep();
+	wb.close();
+	fs.close();
 	}catch(Exception e)
 	{
 		error.setText(e+"Invalid File Selected");
 		submit.setVisible(false);
-		b.setVisible(false);
-   	 	b2.setEnabled(true);
-   	 	b3.setEnabled(true);
-   	 	b4.setEnabled(true);
-   	 	b5.setEnabled(true);
+		b.setVisible(false); b2.setEnabled(true); b3.setEnabled(true);
+   	 	b4.setEnabled(true); b5.setEnabled(true);
 		return;
-		}
+	}
 }
+
 
 public void finish(){
-	b1.setEnabled(true);
-	b1.setVisible(false);
-	b2.setEnabled(true);
-	b2.setVisible(false);
-	b2x.setVisible(false);
-	b3.setEnabled(true);
-	b4.setEnabled(true);
-	b5.setEnabled(true);
-	submit.setVisible(false);
-	back.setVisible(false);
-	Vb1.setVisible(false);
-	Vb2.setVisible(false);
-	Vb3.setVisible(false);
-	Vb4.setVisible(false);
-	Vb5.setVisible(false);
-	progress.setValue(0);
-	progress.setVisible(false);
-	b.setVisible(false);
-	executeAll.setEnabled(true);
-	ba.setVisible(false);
-	
+	b1.setEnabled(true); b1.setVisible(false); b2.setEnabled(true);
+	b2.setVisible(false); b2x.setVisible(false); b2.setEnabled(true);
+	b1.setEnabled(true); b2x.setEnabled(true); b3.setEnabled(true);
+	b4.setEnabled(true); b5.setEnabled(true); submit.setEnabled(true);
+	submit.setVisible(false); back.setVisible(false); back.setEnabled(true);
+	Vb1.setEnabled(true); Vb2.setEnabled(true); Vb1.setVisible(false);
+	Vb2.setVisible(false); Vb3.setVisible(false); Vb4.setVisible(false);
+	Vb3.setEnabled(true); Vb4.setEnabled(true); Vb5.setEnabled(true);
+	Vb5.setVisible(false); progress.setValue(0); progress.setVisible(false);
+	b.setVisible(false); executeAll.setEnabled(true); ba.setVisible(false);
 }
 
 
+public static String checkAlphabet(int no){
+	if(no==0){return "A";}if(no==1){return "B";}if(no==2){return "C";}
+	if(no==3){return "D";}if(no==4){return "E";}if(no==5){return "F";}
+	if(no==6){return "G";}if(no==7){return "H";}if(no==8){return "I";}
+	if(no==9){return "J";}if(no==10){return "K";}if(no==11){return "L";}
+	if(no==12){return "M";}if(no==13){return "N";}if(no==14){return "O";}
+	if(no==15){return "P";}if(no==16){return "Q";}if(no==17){return "R";}
+	if(no==18){return "S";}if(no==19){return "T";}if(no==20){return "U";}
+	if(no==21){return "V";}if(no==22){return "W";}if(no==23){return "X";}
+	if(no==24){return "Y";}
+	return "Z";
+}
 
+//calling the main function of the program
 public static void main(String[] args) throws IOException, InvalidFormatException{
-new Intro();
-}
-
-
-
-
+	Intro in = new Intro();
+	in.Intros();
+	}
 }
