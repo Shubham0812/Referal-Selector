@@ -2,7 +2,7 @@
 Automation of Reports Generation for Member Referral Process
 
 Language: JAVA
-Software: Eclipse, Apache POI library
+Software: Eclipse, Apache POI library\n\n
 Description: Java Program was developed to automate the manual process of cross checking
 the member referrals applications received in CGI’s career page. The work involved
 formatting of the data of the candidate, getting candidates who were referred by the
